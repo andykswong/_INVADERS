@@ -4,6 +4,8 @@
 
 `_INVADERS` is Space Invaders-inspired game in 3D, in which you must stop endless waves of outer space monsters from invading Earth.
 
+![Start Screen](screenshots/start.png)
+
 ## Gameplay
 - Defeat endless waves of monsters in a confined space.
 - Start with 3 lifes (dots on the top-left of the screen), but similar to Space Invaders, the game ends immediately if the monsters reach the space behind you.
@@ -11,7 +13,9 @@
   - Flier class: Same as aliens in Space Invaders - move left and right as a group, shifting forward when reaching the edge. Red-eyed ones shoot projectiles.
   - Walker class: Only move forward. Red-eyed ones shoot projectiles.
   - Laser class: Do not move, but shoot fast-moving blue projectiles.
-- Mini-boss encounter (with 4 variations) on every 5th wave. You refill 2 lifes when completing the wave.
+- Mini-boss encounter (with 4 variations) on every 5th wave. You refill 2 lifes when completing the wave:
+
+![Boss Fight](screenshots/boss.png)
 
 ## Controls
 Mouse and Keyboard:
@@ -38,8 +42,10 @@ Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-r
 - an extra life
 - the exclusive `Tesla Coil` weapon, which shoots slightly larger projectiles!
 
+![Coil Weapon](screenshots/coil.png)
+
 ## Completely Optional Decentralized Features
-- The game itself is hosted on IPFS: (TODO)
+- The game itself is on IPFS, CID: [QmajmBp4g6ZfSvqhKU7sA3XyGwtF6Mzj6QVqHLQqDAYoW2](https://ipfs.io/ipfs/QmajmBp4g6ZfSvqhKU7sA3XyGwtF6Mzj6QVqHLQqDAYoW2)
 - Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS via [nft.storage](https://nft.storage/)!
 
 ## Browser Support
@@ -47,17 +53,13 @@ Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-r
 - Latest Android Browser, Android Chrome or iOS Safari
 - [ANGLE_instanced_arrays](https://developer.mozilla.org/en-US/docs/Web/API/ANGLE_instanced_arrays) and [OES_standard_derivatives](https://developer.mozilla.org/en-US/docs/Web/API/OES_standard_derivatives) WebGL extensions are required for the game to work.
 
-## Running
-To build the 13KB zip bundle:
-
+## Build & Run
+1. Copy `.env.template` to `.env` and set NFT_SOTRAGE_KEY. You can get an API key for free from [nft.storage](https://nft.storage/).
+2. To build the 13KB zip bundle:
 ```
 npm install && npm build
 ```
-
-To run the dev server locally:
-
+3. To run the dev server locally:
 ```
 npm start
 ```
-
-You can reach the dev server at http://localhost:8080
