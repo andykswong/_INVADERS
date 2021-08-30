@@ -13,9 +13,9 @@ let lastTime = 0;
 requestAnimationFrame(loop);
 function loop(t: number) {
   requestAnimationFrame(loop);
-  const dt = (lastTime ? t - lastTime : 0) / 1000;
+  const dt = lastTime ? t - lastTime : 0;
   lastTime = t;
-  updateFn(t / 1000, dt);
+  updateFn(t / 1000, dt / 1000);
 }
 
 // Init nodes

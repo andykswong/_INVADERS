@@ -24,8 +24,7 @@ merge(wing, trans(trans(box(.5, .1, .02, ALIEN_SKIN_COLOR), rotateAxis([0, 0, 1]
 merge(wing, trans(trans(box(.4, .1, .01, ALIEN_SKIN_COLOR), rotateAxis([0, 0, 1], Math.PI/4)), translate([-1.2, .3, 0])));
 trans(wing, translate([0, 1, 0]));
 
-export const watcher = empty();
-merge(watcher, eyeball2);
+export const watcher = merge(empty(), eyeball2);
 const back = trans(trans(trans(box(.5, .5, .5, ALIEN_SKIN_COLOR), rotateAxis([0, 0, 1], Math.PI/4)), rotateAxis([1, 0, 0], Math.PI/4)), translate([0, 0, -.5]));
 merge(back, trans(trans(trans(box(.5, .5, .5, ALIEN_SKIN_COLOR), rotateAxis([0, 0, 1], -Math.PI/4)), rotateAxis([1, 0, 0], -Math.PI/4)), translate([0, 0, -.5])));
 trans(back, translate([0, 1, 0]));
@@ -41,13 +40,12 @@ trans(wand, scale([1, 1.5, .38]));
 trans(wand, translate([0, .95, 0]));
 merge(wand, stick);
 
-export const coil = empty();
 const coil1 = empty();
 merge(coil1, trans(box(.1, .012, .012, COIL_COLOR), translate([0, 0, -.105])));
 merge(coil1, trans(box(.12, .01, .012, COIL_COLOR), translate([0, 0, .105])));
 merge(coil1, trans(box(.01, .01, .12, COIL_COLOR), translate([-.105, 0, 0])));
 merge(coil1, trans(box(.01, .01, .12, COIL_COLOR), translate([.105, 0, 0])));
-merge(coil, coil1);
+export const coil = merge(empty(), coil1);
 trans(coil, translate([0, -.03, 0]));
 trans(coil1, scale([.8, 1, .8]));
 trans(coil1, translate([0, .05, 0]));

@@ -45,7 +45,7 @@ Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-r
 ![Coil Weapon](screenshots/coil.png)
 
 ## Completely Optional Decentralized Features
-- The game itself is on IPFS: https://cloudflare-ipfs.com/ipfs/QmVo8UiAcnAetJggpMwwpAFXor2R1ivvCwrvjV6bkumwun
+- The game itself is on IPFS: https://cloudflare-ipfs.com/ipfs/QmQPxoC3G3KM78VDmZ4chsHSAuD3DA2WZX95XVi61u9Tre
 - Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS / [nft.storage](https://nft.storage/)! A convenient way to make NFTs out of your gameplay screenshots!
 
 ## Browser Support

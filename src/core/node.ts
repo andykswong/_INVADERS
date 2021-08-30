@@ -58,7 +58,7 @@ export class Node {
   /**
    * Update the transforms of this node hierarchy.
    */
-  public update(t: number, dt: number): void {
+  public update(dt: number): void {
     if (this.hide) { return; }
 
     this.body && vec3.copy(this.body.pos, this.t);
@@ -70,7 +70,7 @@ export class Node {
     this.cam?.update(this.m);
 
     for (const node of this.child) {
-      node.update(t, dt);
+      node.update(dt);
     }
   }
 }

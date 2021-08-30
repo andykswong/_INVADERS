@@ -87,7 +87,7 @@ update((t: number, dt: number): void => {
   });
 
   simulate(dt, bodies, hit);
-  root.update(t, dt);
+  root.update(dt);
 
   const ctx = device.render(pass);
   renderMesh(ctx, camera, meshes);

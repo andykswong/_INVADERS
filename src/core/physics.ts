@@ -1,12 +1,26 @@
 import { aabb, AABB, clamp, Mat4, mat4, ReadonlyAABB, translate, vec3, Vec3 } from 'munum';
 import { Node } from './node';
 
+/**
+ * Physics body.
+ */
 export interface Body {
+  /** Attached node */
   readonly node: Node;
+
+  /** Physic properties flags */
   flag: number;
+
+  /** Position */
   readonly pos: Vec3;
+
+  /** Velocity */
   readonly v: Vec3;
+
+  /** AABB shape */
   readonly shape: ReadonlyAABB;
+
+  /** World bounds for this body */
   bound?: ReadonlyAABB;
 }
 

@@ -38,7 +38,7 @@ export class Player extends Node {
     quat.fromAxisAngle([0, 1, 0], Math.PI, cam.r);
   }
 
-  public update(t: number, dt: number): void {
+  public update(dt: number): void {
     this.control.update();
 
     let attack = false;
@@ -58,7 +58,7 @@ export class Player extends Node {
     v[1] = this.body!.pos[1] && dir[1] ? 20 : v[1];
     v[2] = dir[2] * 10;
 
-    super.update(t, dt);
+    super.update(dt);
 
     if (attack) {
       const projectile = (this.arm.mesh!.id === Meshes.wand) ?
@@ -69,7 +69,7 @@ export class Player extends Node {
       vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 1.7, this.m[14]);
     }
 
-    const theta = this.timer ? (Math.sin(6 * t) + 1) / 2 : 0;
+    const theta = this.timer ? (Math.sin(6 * (ATTACK_TIME - this.timer)) + 1) / 2 : 0;
     quat.fromAxisAngle([1, 0, 0], Math.max(Math.PI / 6, Math.PI / 3 * theta), this.arm.r);
     vec3.set(this.arm.t, -0.7, 1, 1 - .5 * theta);
   }

@@ -49,7 +49,7 @@ export function mesh(device: RenderingDevice, geo: Geometry, maxInstances: numbe
   return {
     attr: device.buffer({ size: attrData.byteLength }).data(attrData),
     idx: device.buffer({ type: BufferType.Index, size: idxData.byteLength }).data(idxData),
-    count: geo.i.length * 3,
+    count: idxData.length,
     iData,
     iattr: device.buffer({ usage: Usage.Stream, size: iData.byteLength }),
     iCount: 0

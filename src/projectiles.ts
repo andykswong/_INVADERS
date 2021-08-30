@@ -23,8 +23,8 @@ export class Projectile extends Node {
     p && playShoot();
   }
 
-  public update(t: number, dt: number): void {
-    super.update(t, dt);
+  public update(dt: number): void {
+    super.update(dt);
 
     if (++this.i % 2) {
       addParticles(16, 0.05 * this.s, 0.1 * this.s, .3 * this.s,

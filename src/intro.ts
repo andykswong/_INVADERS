@@ -8,7 +8,7 @@ import { Meshes } from './models/meshes';
 
 // Setup sky and ground
 addParticles(384, Infinity, 1, 4, [-32, 50, -52], [-30, 52, -50], [-.1, -.1, -.1], [.1, .1, .1], MOON_COLOR);
-addParticles(384, Infinity, 7, 0.3, [-100, 10, -100], [100, 100, 100], [0, 0, 0], [0, 0, 0], SILVER_COLOR);
+addParticles(384, Infinity, 7, .4, [-100, 10, -100], [100, 100, 100], [0, 0, 0], [0, 0, 0], SILVER_COLOR);
 const ground = new Node(root);
 ground.mesh = { id: Meshes.ground };
 

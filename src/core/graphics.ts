@@ -69,7 +69,14 @@ const particlePipeline: Pipeline = device.pipeline({
 });
 
 const meshes: Mesh[] = [];
-const particleGroups: { start: number, time: number, data: Float32Array }[] = [];
+const particleGroups: {
+  /** start time */
+  s: number,
+  /** life time */
+  t: number,
+  /** data */
+  d: Float32Array
+}[] = [];
 const particleData = new Float32Array(COMPONENTS_PER_PARTICLE * 6144);
 const particleBuffer: Buffer = device.buffer({ usage: Usage.Stream, size: particleData.byteLength });
 
@@ -134,9 +141,9 @@ export function addParticles(count: number, time: number, maxLife: number, size:
     array.copy(color, data, 0, i, 4); i += 4;
   }
   particleGroups.push({
-    start: 0,
-    time,
-    data
+    s: 0,
+    t: time,
+    d: data
   });
 }
 
@@ -158,17 +165,14 @@ export function renderParticles(ctx: RenderPassContext, camera: Camera, time: nu
   let count = 0;
   for (let i = 0; i < particleGroups.length;) {
     const inst = particleGroups[i];
-    if (!inst.start) {
-      inst.start = time;
-    }
-    if (time > inst.start + inst.time) {
+    if (time > (inst.s = inst.s || time) + inst.t) {
       particleGroups[i] = particleGroups[particleGroups.length - 1];
       particleGroups.pop();
       continue;
     }
-    if (count + inst.data.length <= particleData.length) {
-      array.copy(inst.data, particleData, 0, count, inst.data.length);
-      count += inst.data.length;
+    if (count + inst.d.length <= particleData.length) {
+      array.copy(inst.d, particleData, 0, count, inst.d.length);
+      count += inst.d.length;
     }
 
     ++i;
