@@ -1,5 +1,6 @@
 import * as path from 'path';
 import webpack from 'webpack';
+import Dotenv from 'dotenv-webpack';
 import TerserPlugin from 'terser-webpack-plugin';
 import HtmlWebpackPlugin from 'html-webpack-plugin';
 import HtmlInlineScriptPlugin from 'html-inline-script-webpack-plugin';
@@ -90,6 +91,7 @@ export default {
       NGL_ENABLE_MRT: false,
       NGL_ENABLE_SCISSOR: false
     }),
+    new Dotenv(),
     new HtmlWebpackPlugin({
       template: './assets/index.html',
       inject: 'body',

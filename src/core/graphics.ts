@@ -1,17 +1,18 @@
 import { Buffer, Pipeline, RenderPassContext } from 'mugl';
-import { array, lerp, mat4, Mat4, ReadonlyVec3, ReadonlyVec4, Vec3, vec3 } from 'munum';
+import { array, lerp, mat4, Mat4, ReadonlyMat4, ReadonlyVec3, ReadonlyVec4, Vec3, vec3 } from 'munum';
 import { Camera } from './camera';
 import { COMPONENTS_PER_MESH_INSTANCE, Mesh, MeshInstance } from './mesh';
 import meshVertSrc from './shaders/mesh.vert';
 import meshFragSrc from './shaders/mesh.frag';
 import particleVertSrc from './shaders/particle.vert';
 import particleFragSrc from './shaders/particle.frag';
-import { SKY_COLOR, I } from '../const';
+import { SKY_COLOR } from '../const';
 import { device } from '../device';
 import { canvas } from '../dom';
 
 export const COMPONENTS_PER_PARTICLE = 12;
 
+const I: ReadonlyMat4 = mat4.create();
 const vp: Mat4 = mat4.create();
 const tmpV3: Vec3 = vec3.create();
 

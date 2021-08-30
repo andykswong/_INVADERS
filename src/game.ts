@@ -13,9 +13,9 @@ import { introNode } from './intro';
 import { Projectile } from './projectiles';
 import { Enemy, Flier, Walker, Watcher } from './enemies';
 import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
-import { Meshes } from './models/meshes';
 import { highscore, maxWave, save } from './save';
-import { BeginnerWaves, BossWaves, Wave, WaveRow } from './waves';
+import { Meshes } from './models/meshes';
+import { BeginnerWaves, BossWaves, Wave, WaveRow } from './models/waves';
 
 const bodies: Body[] = [];
 const meshes: MeshInstance[] = [];

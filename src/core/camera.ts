@@ -1,5 +1,7 @@
 import { array, Mat4, mat4, perspective, vec3, Vec3 } from 'munum';
 
+const p = vec3.create();
+
 /**
  * A perspective camera.
  */
@@ -21,7 +23,21 @@ export class Camera {
    */
   public update(model: Mat4): void {
     perspective(this.aspect, this.yfov, this.znear, this.zfar, this.proj);
-    array.copy(model, this.pos, 12, 0, 3)
-    mat4.invert(model, this.view);
+    array.copy(model, this.pos, 12, 0, 3);
+
+    // Normally we need to invert the model matrix using: mat4.invert(model, this.view);
+    // But mat4.invert() is 800+ bytes in size.
+    // We can exploit the fact that the model matrix A is affine with rotation + translation only:
+    // A = [R  t]
+    //     [0  1]
+    // Then the inverse is simply:
+    // inv(A) = [inv(R)  -inv(R) * t] = [tr(R)  tr(R) * -t]
+    //          [  0           1    ]   [  0         1    ]
+    // This saves 200 bytes after zip and is faster.
+    array.copy(model, p, 12, 0, 3);
+    vec3.scale(p, -1, p);
+    mat4.tr(model, this.view);
+    this.view[3] = this.view[7] = this.view[11] = 0;
+    array.copy(vec3.mmul4(this.view, p, p), this.view, 0, 12, 3);
   }
 }

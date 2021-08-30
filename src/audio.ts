@@ -1,8 +1,7 @@
-import { zzfx, zzfxM, zzfxP } from './core/audio';
+import { zzfx, zzfxP } from './core/audio';
 import { hit, shoot } from './models/sounds/effects';
-import Song from './models/sounds/songpacked';
+import { song } from './models/sounds/song';
 
-const song = zzfxM(...Song);
 let audioCtx: AudioContext;
 
 export function playMusic(): void {

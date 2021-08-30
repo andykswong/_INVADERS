@@ -38,9 +38,9 @@ Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-r
 - an extra life
 - the exclusive `Tesla Coil` weapon, which shoots slightly larger projectiles!
 
-## Optional Decentralized Features
+## Completely Optional Decentralized Features
 - The game itself is hosted on IPFS: (TODO)
-- Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is hosted on IPFS!
+- Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS via [nft.storage](https://nft.storage/)!
 
 ## Browser Support
 - Latest Desktop Chrome, Firefox, Edge, or Safari with WebGL 1.0 enabled
