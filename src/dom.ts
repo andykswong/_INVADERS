@@ -1,0 +1,11 @@
+export const canvas = document.getElementsByTagName('canvas')[0];
+export const nav = document.getElementsByTagName('nav')[0];
+export const startBtn = document.getElementsByTagName('a')[0];
+export const beginnerBtn = document.getElementsByTagName('a')[1];
+export const hitOverlay = document.getElementsByTagName('b')[0];
+export const crosshair = document.getElementsByTagName('span')[0];
+export const health = document.getElementsByTagName('p')[0];
+export const scoreText = document.getElementsByTagName('p')[1];
+export const screenshotBtn = document.getElementsByTagName('p')[2];
+export const coilIcon = document.getElementsByTagName('p')[3];
+export const attackBtn = document.getElementsByTagName('p')[4];

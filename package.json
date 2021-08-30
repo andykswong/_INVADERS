@@ -1,0 +1,36 @@
+{
+  "name": "js13k2021",
+  "private": true,
+  "version": "1.0.0",
+  "description": "_INVADERS - JS13KGames 2021 Submission",
+  "author": "Andy K.S. Wong",
+  "license": "MIT",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack",
+    "postbuild": "npm run zip",
+    "zip": "node zip.mjs",
+    "start": "cross-env NODE_ENV=development webpack serve"
+  },
+  "dependencies": {
+    "mugl": "^0.0.5",
+    "munum": "^0.0.5"
+  },
+  "devDependencies": {
+    "@babel/preset-env": "^7.15.0",
+    "@babel/preset-typescript": "^7.15.0",
+    "7zip-bin": "^5.1.1",
+    "babel-loader": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "html-inline-script-webpack-plugin": "^2.0.2",
+    "html-webpack-plugin": "^5.3.2",
+    "ngrok": "^4.1.0",
+    "node-7z": "^3.0.0",
+    "qrcode-terminal": "^0.12.0",
+    "rimraf": "^2.7.1",
+    "source-map-loader": "^3.0.0",
+    "webpack": "^5.50.0",
+    "webpack-cli": "^4.7.2",
+    "webpack-dev-server": "^3.11.2"
+  }
+}
