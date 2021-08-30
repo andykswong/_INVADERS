@@ -89,7 +89,8 @@ export default {
       NGL_ENABLE_RASTER: false,
       NGL_ENABLE_OFFSCREEN: false,
       NGL_ENABLE_MRT: false,
-      NGL_ENABLE_SCISSOR: false
+      NGL_ENABLE_SCISSOR: false,
+      NGL_ENABLE_TEXTURE: false,
     }),
     new Dotenv(),
     new HtmlWebpackPlugin({

@@ -27,7 +27,7 @@ screenshotBtn.addEventListener('click', () => {
       })
         .then(response => response.json())
         .then(data => {
-          open(`https://${data['value']['cid']}.ipfs.dweb.link`, '_blank');
+          open(`https://cloudflare-ipfs.com/ipfs/${data['value']['cid']}`, '_blank');
           screenshotReady = true;
         });
     });

@@ -39,14 +39,14 @@ Gamepad (only tested with Xbox, but other controllers should work):
 
 ## Web Monetization Exclusives
 Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-right corner of the screen. They will get:
-- an extra life
-- the exclusive `Tesla Coil` weapon, which shoots slightly larger projectiles!
+- An extra life
+- The exclusive `Tesla Coil` weapon, which shoots slightly larger projectiles!
 
 ![Coil Weapon](screenshots/coil.png)
 
 ## Completely Optional Decentralized Features
-- The game itself is on IPFS, CID: [QmajmBp4g6ZfSvqhKU7sA3XyGwtF6Mzj6QVqHLQqDAYoW2](https://ipfs.io/ipfs/QmajmBp4g6ZfSvqhKU7sA3XyGwtF6Mzj6QVqHLQqDAYoW2)
-- Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS via [nft.storage](https://nft.storage/)!
+- The game itself is on IPFS: https://cloudflare-ipfs.com/ipfs/QmVo8UiAcnAetJggpMwwpAFXor2R1ivvCwrvjV6bkumwun
+- Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS / [nft.storage](https://nft.storage/)! A convenient way to make NFTs out of your gameplay screenshots!
 
 ## Browser Support
 - Latest Desktop Chrome, Firefox, Edge, or Safari with WebGL 1.0 enabled
@@ -63,3 +63,13 @@ npm install && npm build
 ```
 npm start
 ```
+
+## The Tech
+- WebGL graphics powered by [mugl](https://github.com/andykswong/mugl), my 2KB micro WebGL library
+- Sound effects and music powered by [ZzFX](https://github.com/KilledByAPixel/ZzFX) and [ZzFXM](https://keithclark.github.io/ZzFXM/)
+- Screenshot upload using [nft.storage](https://nft.storage/)
+- Code minified and packed into single HTML file with Webpack and Terser
+- Zip archive compressed with 7-Zip
+
+## License
+This repository and the code inside it is licensed under the MIT License. Read [LICENSE](./LICENSE) for more information.

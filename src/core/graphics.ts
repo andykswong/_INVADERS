@@ -1,4 +1,4 @@
-import { Buffer, Pipeline, RenderPassContext } from 'mugl';
+import { BlendFactor, Buffer, CompareFunc, Pipeline, PrimitiveType, RenderPassContext, ShaderType, UniformFormat, Usage, VertexFormat } from 'mugl';
 import { array, lerp, mat4, Mat4, ReadonlyMat4, ReadonlyVec3, ReadonlyVec4, Vec3, vec3 } from 'munum';
 import { Camera } from './camera';
 import { COMPONENTS_PER_MESH_INSTANCE, Mesh, MeshInstance } from './mesh';
@@ -17,61 +17,61 @@ const vp: Mat4 = mat4.create();
 const tmpV3: Vec3 = vec3.create();
 
 const pipeline: Pipeline = device.pipeline({
-  vert: device.shader({ type: 35633, source: meshVertSrc }),
-  frag: device.shader({ type: 35632, source: meshFragSrc }),
+  vert: device.shader({ type: ShaderType.Vertex, source: meshVertSrc }),
+  frag: device.shader({ type: ShaderType.Fragment, source: meshFragSrc }),
   buffers: [{
     attrs: [
-      { name: 'pos', format: 768 /* Vec3 */ },
-      { name: 'c', format: 1024 /* Vec4 */ },
+      { name: 'pos', format: VertexFormat.Float3 },
+      { name: 'c', format: VertexFormat.Float4 },
     ]
   }, {
     attrs: [
-      { name: 'm1', format: 1024 /* Vec4 */ },
-      { name: 'm2', format: 1024 /* Vec4 */ },
-      { name: 'm3', format: 1024 /* Vec4 */ },
-      { name: 'm4', format: 1024 /* Vec4 */ },
+      { name: 'm1', format: VertexFormat.Float4 },
+      { name: 'm2', format: VertexFormat.Float4 },
+      { name: 'm3', format: VertexFormat.Float4 },
+      { name: 'm4', format: VertexFormat.Float4 },
     ],
     instanced: true
   },],
   uniforms: [
-    { name: 'vp', valueFormat: 35676 /* Mat4 */ },
-    { name: 'p', valueFormat: 35665 /* Vec3 */ },
-    { name: 'f', valueFormat: 35666 /* Vec4 */ },
+    { name: 'vp', valueFormat: UniformFormat.Mat4 },
+    { name: 'p', valueFormat: UniformFormat.Vec3 },
+    { name: 'f', valueFormat: UniformFormat.Vec4 },
   ],
-  depth: { compare: 515 /* Lequal */, write: true }
+  depth: { compare: CompareFunc.LEqual, write: true }
 });
 
 const particlePipeline: Pipeline = device.pipeline({
-  vert: device.shader({ type: 35633, source: particleVertSrc }),
-  frag: device.shader({ type: 35632, source: particleFragSrc }),
+  vert: device.shader({ type: ShaderType.Vertex, source: particleVertSrc }),
+  frag: device.shader({ type: ShaderType.Fragment, source: particleFragSrc }),
   buffers: [{
     attrs: [
-      { name: 'p', format: 768 /* Vec3 */ },
-      { name: 'v', format: 768 /* Vec3 */ },
-      { name: 't', format: 256 /* Float */ },
-      { name: 's', format: 256 /* Float */ },
-      { name: 'c', format: 1024 /* Vec4 */ },
+      { name: 'p', format: VertexFormat.Float3 },
+      { name: 'v', format: VertexFormat.Float3 },
+      { name: 't', format: VertexFormat.Float },
+      { name: 's', format: VertexFormat.Float },
+      { name: 'c', format: VertexFormat.Float4 },
     ]
   }],
   uniforms: [
-    { name: 'vp', valueFormat: 35676 /* Mat4 */ },
+    { name: 'vp', valueFormat: UniformFormat.Mat4 },
     { name: 'vw' },
     { name: 'ct' }
   ],
-  depth: { compare: 515 /* Lequal */, write: false },
+  depth: { compare: CompareFunc.LEqual, write: false },
   blend: {
-    srcFactorRGB: 770, // BlendFactor.SrcAlpha
-    srcFactorAlpha: 1, // BlendFactor.One
-    dstFactorRGB: 771, // BlendFactor.OneMinusSrcAlpha
-    dstFactorAlpha: 771, // BlendFactor.OneMinusSrcAlpha
+    srcFactorRGB: BlendFactor.SrcAlpha,
+    srcFactorAlpha: BlendFactor.One,
+    dstFactorRGB: BlendFactor.OneMinusSrcAlpha,
+    dstFactorAlpha: BlendFactor.OneMinusSrcAlpha,
   },
-  mode: 0
+  mode: PrimitiveType.Points
 });
 
 const meshes: Mesh[] = [];
 const particleGroups: { start: number, time: number, data: Float32Array }[] = [];
 const particleData = new Float32Array(COMPONENTS_PER_PARTICLE * 6144);
-const particleBuffer: Buffer = device.buffer({ usage: 35040 /* Stream */, size: particleData.byteLength });
+const particleBuffer: Buffer = device.buffer({ usage: Usage.Stream, size: particleData.byteLength });
 
 /**
  * Registers a mesh.

@@ -1,5 +1,5 @@
-import { Buffer, RenderingDevice } from 'mugl';
-import { Mat4, Vec4 } from 'munum';
+import { Buffer, BufferType, RenderingDevice, Usage } from 'mugl';
+import { Mat4 } from 'munum';
 import { Geometry } from './procedural';
 import { flatMap } from './utils';
 
@@ -48,10 +48,10 @@ export function mesh(device: RenderingDevice, geo: Geometry, maxInstances: numbe
   const idxData = new Uint16Array(flatMap(geo.i, v => v));
   return {
     attr: device.buffer({ size: attrData.byteLength }).data(attrData),
-    idx: device.buffer({ type: 34963, size: idxData.byteLength }).data(idxData),
+    idx: device.buffer({ type: BufferType.Index, size: idxData.byteLength }).data(idxData),
     count: geo.i.length * 3,
     iData,
-    iattr: device.buffer({ usage: 35040 /* Stream */, size: iData.byteLength }),
+    iattr: device.buffer({ usage: Usage.Stream, size: iData.byteLength }),
     iCount: 0
   };
 }
