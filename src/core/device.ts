@@ -1,6 +1,6 @@
 import { getNGLDevice } from 'mugl';
-import { SKY_COLOR } from './const';
-import { canvas } from './dom';
+import { SKY_COLOR } from '../const';
+import { canvas } from '../dom';
 
 export const device = getNGLDevice(canvas, {
   'preserveDrawingBuffer': true

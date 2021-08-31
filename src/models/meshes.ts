@@ -1,6 +1,6 @@
+import { device } from '../core/device';
 import { addMesh } from '../core/graphics';
 import { mesh } from '../core/mesh';
-import { device } from '../device';
 import { coil, eyeball, eyeball2, foot, ground, wand, watcher, wing } from './geometries';
 
 export const Meshes = {

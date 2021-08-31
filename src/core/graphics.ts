@@ -7,7 +7,7 @@ import meshVertSrc from './shaders/mesh.vert';
 import meshFragSrc from './shaders/mesh.frag';
 import particleVertSrc from './shaders/particle.vert';
 import particleFragSrc from './shaders/particle.frag';
-import { device } from '../device';
+import { device } from './device';
 import { canvas } from '../dom';
 
 const I: ReadonlyMat4 = mat4.create();

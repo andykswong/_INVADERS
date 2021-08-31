@@ -4,7 +4,6 @@ import './models/sounds';
 import './models/waves';
 
 import { init } from './state';
-import './device';
 import './intro';
 import './ui';
 import './game';

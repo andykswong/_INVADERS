@@ -1,16 +1,16 @@
 import { vec3 } from 'munum';
-import { traverse } from './core/node';
+import { device, pass } from './core/device';
 import { renderMesh, renderParticles } from './core/graphics';
 import { MeshInstance } from './core/mesh';
+import { traverse } from './core/node';
 import { Body, simulate } from './core/physics';
 import { zrand } from './core/utils';
-import { device, pass } from './device';
 import { camera, enemies, player, projectiles, root } from './init';
 import { Player } from './player';
 import { playHit } from './audio';
 import { Projectile } from './projectile';
 import { Enemy, Flier, Walker, Watcher } from './enemies';
-import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
+import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
 import { BeginnerWaves, BossWaves, Wave, WaveRow } from './models/waves';
 import { Screen, state, stateChangeListeners, updateState } from './state';
 
@@ -47,8 +47,8 @@ function loop(t: number) {
 
   // Update game
   if (state.scr === Screen.Game) {
-    checkWaveEnd();
-    updateEnemy(dt);
+    updateWave(dt);
+    updateEnemies(dt);
     if (state.hp !== player.hp) {
       updateState({
         'scr': player.hp <= 0 ? Screen.End : Screen.Game,
@@ -106,22 +106,41 @@ function hit(target: Body, by: Body): void {
   }
 }
 
-// Enemy Updates
-// =============
+// Waves and Enemies Updates
+// =========================
 
-function checkWaveEnd(): void {
+function updateWave(dt: number): void {
+  // Check if current wave is complete
   if (!nextWaveCountdown && !enemies.child.length) {
     nextWaveCountdown = ENEMY_WAVE_COUNTDOWN;
     const wave = state.wave + 1;
-    if (state.beg && wave === BeginnerWaves.length) {
+
+    if (state.beg && wave <= BeginnerWaves.length) {
+      // Beginner gets extra health and heal during the beginner waves
       player.hp = 5;
     } else if (wave && !(wave % WAVE_CYCLE)) {
+      // +2 HP after every miniboss
       player.hp = Math.min(PLAYER_MAX_HP, player.hp + 2);
     }
+
     updateState({
       'wave': wave,
     });
   }
+
+  // Populate next wave after countdown
+  if (nextWaveCountdown && !(nextWaveCountdown = Math.max(0, nextWaveCountdown - dt))) {
+    populateWave(getWave());
+  }
+}
+
+function getWave(): Wave {
+  return (
+    (state.beg && state.wave < BeginnerWaves.length) ? BeginnerWaves[state.wave] :
+    (state.wave % WAVE_CYCLE === WAVE_CYCLE - 1) ?
+      BossWaves[((state.wave < (state.beg ? 2 : 1) * WAVE_CYCLE ? BEGINNER_BOSS_COUNT : BossWaves.length) * Math.random()) | 0] :
+    generateWave()
+  );
 }
 
 function generateWave(): Wave {
@@ -154,12 +173,7 @@ function generateWave(): Wave {
   return data;
 }
 
-function populateWave(): void {
-  const data =
-    (state.beg && state.wave < BeginnerWaves.length) ? BeginnerWaves[state.wave] :
-    (state.wave % WAVE_CYCLE === WAVE_CYCLE - 1) ?
-      BossWaves[((state.wave < WAVE_CYCLE ? BEGINNER_BOSS_COUNT : BossWaves.length) * Math.random()) | 0] :
-    generateWave();
+function populateWave(data: Wave): void {
   for (let z = 0; z < data.length; ++z) {
     for (let y = 0; y < data[z].length; ++y) {
       for (let x = 0; x < 11; ++x) {
@@ -167,7 +181,7 @@ function populateWave(): void {
         if (!id) { continue; }
 
         const enemy = createEnemy(id);
-        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (id < 3 || id === 5 ? 20 : 0), Math.min(9, (state.wave / 2) | 0) - z * 6 - y);
+        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (id < 3 || id === 5 ? 20 : 0), Math.min(15, (state.wave / 2) | 0) - z * 6 - y);
 
         (id < 3) && vec3.set(enemy.body.v, 0, 0, 1);
       }
@@ -175,19 +189,8 @@ function populateWave(): void {
   }
 }
 
-function createEnemy(id: number): Enemy {
-  return (
-    id < 3 ? new Walker(enemies, id & 1) :
-    id < 5 ? new Flier(enemies, id & 1) :
-    new Watcher(enemies)
-  );
-}
-
-function updateEnemy(dt: number): void {
+function updateEnemies(dt: number): void {
   flyForward = Math.max(0, flyForward - dt);
-  if (nextWaveCountdown && !(nextWaveCountdown = Math.max(0, nextWaveCountdown - dt))) {
-    populateWave();
-  }
 
   let min = 20, max = -20;
   for (const enemy of (enemies.child as Enemy[])) {
@@ -204,7 +207,7 @@ function updateEnemy(dt: number): void {
 
   if ((flyDir < 0 && min <= -20) || (flyDir > 0 && max >= 20)) {
     flyDir *= -1;
-    flyForward = 3;
+    flyForward = 4;
   }
 
   for (const enemy of (enemies.child as Enemy[])) {
@@ -212,4 +215,12 @@ function updateEnemy(dt: number): void {
       vec3.set(enemy.body.v, flyDir, 0, flyForward ? 1 : 0);
     }
   }
+}
+
+function createEnemy(id: number): Enemy {
+  return (
+    id < 3 ? new Walker(enemies, id & 1) :
+    id < 5 ? new Flier(enemies, id & 1) :
+    new Watcher(enemies)
+  );
 }

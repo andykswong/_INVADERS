@@ -32,7 +32,7 @@ merge(watcher, back);
 
 export const foot = box(.2, .1, .3, ALIEN_SKIN_COLOR);
 
-const stick = box(.04, 0.8, .04, WOOD_COLOR);
+const stick = box(.04, .8, .04, WOOD_COLOR);
 
 export const wand = box(.1, .1, .1, WAND_COLOR);
 trans(wand, rotateAxis([0, 0, 1], Math.PI/4));
@@ -54,6 +54,6 @@ trans(coil1, scale([.8, 1, .8]));
 trans(coil1, translate([0, .09, 0]));
 merge(coil, coil1);
 merge(coil, trans(box(.07, .07, .07, COIL_HEAD_COLOR), translate([0, .35, 0])));
-trans(coil, translate([0, .8, 0]));
+trans(coil, translate([0, .5, 0]));
 trans(coil, rotateAxis([0, 1, 0], Math.PI/24));
-merge(coil, trans(box(.015, 1, .015, WOOD_COLOR), translate([0, .1, 0])));
+merge(coil, box(.015, .8, .015, WOOD_COLOR));

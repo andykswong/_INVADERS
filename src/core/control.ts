@@ -96,7 +96,7 @@ export class FpsControl {
   };
 
   private touchCtrl(enable: boolean): void {
-    this.atkBtn.hidden = enable;
+    this.atkBtn.hidden = !enable;
     const addOrRemoveAttack = (enable ? this.atkBtn.addEventListener : this.atkBtn.removeEventListener).bind(this.atkBtn);
     const addOrRemoveCanvasTouch = (enable ? addEventListener : removeEventListener);
     addOrRemoveAttack('touchstart', this.attackdown);
@@ -245,7 +245,7 @@ function processGamepad(control: FpsControl): Action {
     horizontal = gamepad.axes[2] || 0;
     vertical = gamepad.axes[3] || 0;
     control.rot(
-      Math.abs(horizontal) > GAMEPAD_MOVE_THRESHOLD ? -horizontal / 200 : 0,
+      Math.abs(horizontal) > GAMEPAD_MOVE_THRESHOLD ? horizontal / 200 : 0,
       Math.abs(vertical) > GAMEPAD_MOVE_THRESHOLD ? vertical / 200 : 0
     );
   }

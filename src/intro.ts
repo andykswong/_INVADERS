@@ -11,7 +11,7 @@ const n = new Flier(introNode, 1, 0);
 const n2 = new Flier(introNode, 0, 0);
 const n3 = new Walker(introNode, 0, 0);
 const n4 = new Walker(introNode, 1, 0);
-vec3.set(n.body.pos, 4, 5, 32);
+vec3.set(n.body.pos, 5, 5, 32);
 vec3.set(n2.body.pos, -7, 4, 30);
 vec3.set(n3.body.pos, 3, 0, 20);
 vec3.set(n4.body.pos, -2.5, 0, 28);

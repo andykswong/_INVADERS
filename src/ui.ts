@@ -1,4 +1,4 @@
-import { NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT, PLAYER_HP } from './const';
+import { NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT } from './const';
 import { beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, nav, scoreText, screenshotBtn, startBtn } from './dom';
 import { Screen, startGame, state, stateChangeListeners, updateState } from './state';
 import { playMusic } from './audio';
@@ -103,7 +103,7 @@ stateChangeListeners.push((newState, prevState, init) => {
     scoreText.innerText = `SCORE ${newState.score}`;
   }
   if (newState.hp !== prevState.hp) {
-    health.innerText = (newState.hp ? `HP ${Array(newState.hp | 0).fill('⬤').join(' ')}` : '');
+    health.innerText = (newState.hp ? `LIVES ${Array(newState.hp | 0).fill('⬤').join(' ')}` : '');
     if (newState.hp < prevState.hp) {
       playerHit();
     }

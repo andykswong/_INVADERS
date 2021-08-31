@@ -47,7 +47,7 @@ export const PROJECTILE_TTL = 10 as const;
 
 export const ENEMY_WAVE_COUNTDOWN = 1 as const;
 export const WAVE_GENERATOR_MAX_ITER = 256 as const;
-export const WAVE_CYCLE = 5 as const;
+export const WAVE_CYCLE = 4 as const;
 export const BEGINNER_BOSS_COUNT = 2 as const;
 
 // Colors used in game
