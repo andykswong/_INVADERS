@@ -1,6 +1,6 @@
 import { array, Mat4, mat4, perspective, vec3, Vec3 } from 'munum';
 
-const p = vec3.create();
+const tmpV3 = vec3.create();
 
 /**
  * A perspective camera.
@@ -34,10 +34,10 @@ export class Camera {
     // inv(A) = [inv(R)  -inv(R) * t] = [tr(R)  tr(R) * -t]
     //          [  0           1    ]   [  0         1    ]
     // This saves 200 bytes after zip and is faster.
-    array.copy(model, p, 12, 0, 3);
-    vec3.scale(p, -1, p);
+    array.copy(model, tmpV3, 12, 0, 3);
+    vec3.scale(tmpV3, -1, tmpV3);
     mat4.tr(model, this.view);
     this.view[3] = this.view[7] = this.view[11] = 0;
-    array.copy(vec3.mmul4(this.view, p, p), this.view, 0, 12, 3);
+    array.copy(vec3.mmul4(this.view, tmpV3, tmpV3), this.view, 0, 12, 3);
   }
 }

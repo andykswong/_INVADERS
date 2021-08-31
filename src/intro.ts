@@ -1,16 +1,9 @@
 import { quat, vec3 } from 'munum';
-import { MOON_COLOR, SILVER_COLOR } from './const';
-import { addParticles } from './core/graphics';
 import { Node } from './core/node';
-import { Flier, Walker } from './enemies';
 import { root } from './init';
-import { Meshes } from './models/meshes';
+import { Flier, Walker } from './enemies';
 
-// Setup sky and ground
-addParticles(384, Infinity, 1, 4, [-32, 50, -52], [-30, 52, -50], [-.1, -.1, -.1], [.1, .1, .1], MOON_COLOR);
-addParticles(384, Infinity, 7, .4, [-100, 10, -100], [100, 100, 100], [0, 0, 0], [0, 0, 0], SILVER_COLOR);
-const ground = new Node(root);
-ground.mesh = { id: Meshes.ground };
+// Setup the intro scene
 
 export const introNode = new Node(root);
 

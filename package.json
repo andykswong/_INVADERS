@@ -7,8 +7,10 @@
   "license": "MIT",
   "main": "index.js",
   "scripts": {
+    "prebuild": "npm run tsc",
     "build": "webpack",
     "postbuild": "npm run zip",
+    "tsc": "tsc --noEmit",
     "zip": "node zip.mjs",
     "start": "cross-env NODE_ENV=development webpack serve"
   },
@@ -30,6 +32,7 @@
     "qrcode-terminal": "^0.12.0",
     "rimraf": "^2.7.1",
     "source-map-loader": "^3.0.0",
+    "typescript": "^4.4.2",
     "webpack": "^5.50.0",
     "webpack-cli": "^4.7.2",
     "webpack-dev-server": "^3.11.2"

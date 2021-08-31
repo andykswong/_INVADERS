@@ -83,6 +83,7 @@ export default {
   },
   plugins: [
     new webpack.DefinePlugin({
+      'process.env.DEBUG': !isProd,
       MUGL_DEBUG: !isProd,
       NGL_ENABLE_BLEND: true,
       NGL_ENABLE_STENCIL: false,

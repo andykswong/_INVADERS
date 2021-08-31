@@ -1,17 +1,16 @@
-import { aabb, quat, vec3 } from 'munum';
+import { quat, vec3 } from 'munum';
 import { Meshes } from './models/meshes';
-import { ENERGY_COLOR, FIRE_COLOR, PLAYER_HP } from './const';
+import { ENERGY_COLOR, FIRE_COLOR, PLAYER_ATTACK_TIME, PLAYER_BOUND, PLAYER_HP, PLAYER_SHAPE } from './const';
 import { Camera } from './core/camera';
 import { FpsControl } from './core/control';
 import { Node } from './core/node';
 import { body } from './core/physics';
 import { projectiles } from './init';
-import { Projectile } from './projectiles';
+import { Projectile } from './projectile';
 
-const ATTACK_TIME = .5;
-const PLAYER_SHAPE = aabb.create([-.5, 0, -.5], [.5, 2, .5]);
-const PLAYER_BOUND = aabb.create([-16, 0, 30], [16, 0, 50]);
-
+/**
+ * A player entity.
+ */
 export class Player extends Node {
   public timer: number = 0;
   public arm: Node;
@@ -44,7 +43,7 @@ export class Player extends Node {
     let attack = false;
     this.timer = Math.max(0, this.timer - dt);
     if (!this.timer && this.control.atk) {
-      this.timer = ATTACK_TIME;
+      this.timer = PLAYER_ATTACK_TIME;
       attack = true;
     }
 
@@ -69,7 +68,7 @@ export class Player extends Node {
       vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 1.7, this.m[14]);
     }
 
-    const theta = this.timer ? (Math.sin(6 * (ATTACK_TIME - this.timer)) + 1) / 2 : 0;
+    const theta = this.timer ? (Math.sin(6 * (PLAYER_ATTACK_TIME - this.timer)) + 1) / 2 : 0;
     quat.fromAxisAngle([1, 0, 0], Math.max(Math.PI / 6, Math.PI / 3 * theta), this.arm.r);
     vec3.set(this.arm.t, -0.7, 1, 1 - .5 * theta);
   }

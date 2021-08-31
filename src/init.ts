@@ -1,34 +1,26 @@
+import { MOON_COLOR, SILVER_COLOR } from './const';
 import { Camera } from './core/camera';
-import { Node } from './core/node';
 import { FpsControl } from './core/control';
-import { canvas } from './dom';
+import { addParticles } from './core/graphics';
+import { Node } from './core/node';
+import { Meshes } from './models/meshes';
+import { attackBtn, canvas } from './dom';
 import { Player } from './player';
 
-let updateFn: (t: number, dt: number) => void = () => {};
-export function update(fn: (t: number, dt: number) => void): void {
-  updateFn = fn;
-}
-
-let lastTime = 0;
-requestAnimationFrame(loop);
-function loop(t: number) {
-  requestAnimationFrame(loop);
-  const dt = lastTime ? t - lastTime : 0;
-  lastTime = t;
-  updateFn(t / 1000, dt / 1000);
-}
-
 // Init nodes
+
 export const root = new Node();
-
-export const camera = new Camera();
-function resizeCanvas() {
-  camera.aspect = (canvas.width = innerWidth) / (canvas.height = innerHeight);
-}
-addEventListener('resize', resizeCanvas);
-resizeCanvas();
-
-export const control = new FpsControl(canvas);
-export const player = new Player(root, camera, control);
 export const enemies = new Node(root);
 export const projectiles = new Node(root);
+
+export const camera = new Camera();
+export const control = new FpsControl(canvas, attackBtn);
+export const player = new Player(root, camera, control);
+
+// Setup sky and ground
+
+addParticles(384, Infinity, 1, 4, [-32, 50, -52], [-30, 52, -50], [-.1, -.1, -.1], [.1, .1, .1], MOON_COLOR);
+addParticles(384, Infinity, 7, .4, [-100, 10, -100], [100, 100, 100], [0, 0, 0], [0, 0, 0], SILVER_COLOR);
+
+const ground = new Node(root);
+ground.mesh = { id: Meshes.ground };

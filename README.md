@@ -40,7 +40,7 @@ Gamepad (only tested with Xbox, but other controllers should work):
 ## Web Monetization Exclusives
 Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-right corner of the screen. They will get:
 - An extra life
-- The exclusive `Tesla Coil` weapon, which shoots slightly larger projectiles!
+- The exclusive [Tesla Coil](https://cnc.fandom.com/wiki/Tesla_coil_(Red_Alert_1)) weapon, which shoots slightly larger projectiles!
 
 ![Coil Weapon](screenshots/coil.png)
 

@@ -1,4 +1,5 @@
 import { aabb, AABB, clamp, Mat4, mat4, ReadonlyAABB, translate, vec3, Vec3 } from 'munum';
+import { GRAVITY, MIN_BOUND, MAX_BOUND } from '../const';
 import { Node } from './node';
 
 /**
@@ -23,10 +24,6 @@ export interface Body {
   /** World bounds for this body */
   bound?: ReadonlyAABB;
 }
-
-export const MIN_BOUND = [-20, 0, -50] as const;
-export const MAX_BOUND = [20, 50, 50] as const;
-export const GRAVITY = [0, -15, 0] as const;
 
 const tmpV: Vec3 = vec3.create();
 const tmpMat: Mat4 = mat4.create();

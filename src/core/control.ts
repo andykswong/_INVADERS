@@ -1,8 +1,5 @@
 import { clamp, quat, vec3, Vec3 } from 'munum';
-import { attackBtn } from '../dom';
-
-const GAMEPAD_MOVE_THRESHOLD = 0.3;
-const TOCUH_MOVE_THRESHOLD = 0.02;
+import { GAMEPAD_MOVE_THRESHOLD, TOCUH_MOVE_THRESHOLD } from '../const';
 
 const TWO_PI = 2 * Math.PI;
 
@@ -34,6 +31,7 @@ export class FpsControl {
 
   public constructor(
     private readonly canvas: HTMLCanvasElement,
+    private readonly atkBtn: HTMLElement,
     /** Angular speed */
     public w: number = TWO_PI / 4
   ) {
@@ -41,6 +39,9 @@ export class FpsControl {
     document.addEventListener('pointerlockchange', this.lock);
   }
 
+  /**
+   * Start taking over the controls.
+   */
   public start(): void {
     if (!this.paused) { return; }
     if (this.touch) {
@@ -52,6 +53,9 @@ export class FpsControl {
     }
   }
 
+  /**
+   * Pause controls.
+   */
   public pause(): void {
     if (this.touch) {
       this.touchCtrl(false);
@@ -60,6 +64,9 @@ export class FpsControl {
     }
   }
 
+  /**
+   * Reset control states.
+   */
   public reset(): void {
     this.pause();
     this.paused = true;
@@ -68,37 +75,11 @@ export class FpsControl {
     this.action = Action.None;
   }
 
+  /**
+   * Process control inputs.
+   */
   public update(): void {
-    let gamepadAction = Action.None;
-
-    const gamepad = navigator.getGamepads?.()[0];
-    if (!this.paused && gamepad) {
-      if (gamepad.buttons[0].pressed || gamepad.buttons[7]?.pressed) {
-        gamepadAction = gamepadAction | Action.A;
-      }
-
-      let horizontal = gamepad.axes[0] || 0;
-      let vertical = gamepad.axes[1] || 0;
-      if (horizontal < -GAMEPAD_MOVE_THRESHOLD) {
-        gamepadAction = gamepadAction | Action.L;
-      } else if (horizontal > GAMEPAD_MOVE_THRESHOLD) {
-        gamepadAction = gamepadAction | Action.R;
-      }
-      if (vertical < -GAMEPAD_MOVE_THRESHOLD) {
-        gamepadAction = gamepadAction | Action.U;
-      } else if (vertical > GAMEPAD_MOVE_THRESHOLD) {
-        gamepadAction = gamepadAction | Action.D;
-      }
-
-      horizontal = gamepad.axes[2] || 0;
-      vertical = gamepad.axes[3] || 0;
-      this.move(
-        Math.abs(horizontal) > GAMEPAD_MOVE_THRESHOLD ? -horizontal / 200 : 0,
-        Math.abs(vertical) > GAMEPAD_MOVE_THRESHOLD ? vertical / 200 : 0
-      );
-    }
-
-    const action = this.paused ? Action.None : (this.action | gamepadAction);
+    const action = this.paused ? Action.None : (this.action | processGamepad(this));
     this.atk = !!(action & Action.A);
     this.dir[0] = (action & Action.L ? 1 : 0) + (action & Action.R ? -1 : 0);
     this.dir[2] = (action & Action.D ? -1 : 0) + (action & Action.U ? 1 : 0);
@@ -106,14 +87,17 @@ export class FpsControl {
     quat.rotateVec3(this.dir, quat.rotateY(this.rotY, tmpQuat), this.dir);
   }
 
-  private move(x: number, y: number): void {
+  /**
+   * Set X/Y rotations.
+   */
+  public rot(x: number, y: number): void {
     this.rotY = clamp((this.rotY - x * this.w + TWO_PI) % TWO_PI, TWO_PI / 8 * 3, TWO_PI / 8 * 5);
     this.rotX = clamp(this.rotX + y * this.w, -TWO_PI / 8, TWO_PI / 48);
   };
 
   private touchCtrl(enable: boolean): void {
-    attackBtn.style.display = enable ? 'block' : 'none';
-    const addOrRemoveAttack = (enable ? attackBtn.addEventListener : attackBtn.removeEventListener).bind(attackBtn);
+    this.atkBtn.hidden = enable;
+    const addOrRemoveAttack = (enable ? this.atkBtn.addEventListener : this.atkBtn.removeEventListener).bind(this.atkBtn);
     const addOrRemoveCanvasTouch = (enable ? addEventListener : removeEventListener);
     addOrRemoveAttack('touchstart', this.attackdown);
     addOrRemoveAttack('touchend', this.attackup);
@@ -132,7 +116,7 @@ export class FpsControl {
   };
 
   private mousemove = (e: MouseEvent): void => {
-    this.move(e.movementX / innerWidth, e.movementY / innerHeight);
+    this.rot(e.movementX / innerWidth, e.movementY / innerHeight);
   };
 
   private mousedown = (e: MouseEvent): void => {
@@ -171,7 +155,7 @@ export class FpsControl {
           this.action = this.action | Action.D;
         }
       } else {
-        this.move(horizontal, vertical);
+        this.rot(horizontal, vertical);
         touchPoint[0] = touch.clientX;
         touchPoint[1] = touch.clientY;
       }
@@ -234,4 +218,37 @@ function mapKeyToAction(key: string): Action {
     case 'Enter': case 'e': return Action.A;
   }
   return Action.None;
+}
+
+function processGamepad(control: FpsControl): Action {
+  const gamepad = navigator.getGamepads?.()[0];
+  let gamepadAction = Action.None;
+
+  if (gamepad) {
+    if (gamepad.buttons[0]?.pressed || gamepad.buttons[7]?.pressed) {
+      gamepadAction = gamepadAction | Action.A;
+    }
+
+    let horizontal = gamepad.axes[0] || 0;
+    let vertical = gamepad.axes[1] || 0;
+    if (horizontal < -GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | Action.L;
+    } else if (horizontal > GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | Action.R;
+    }
+    if (vertical < -GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | Action.U;
+    } else if (vertical > GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | Action.D;
+    }
+
+    horizontal = gamepad.axes[2] || 0;
+    vertical = gamepad.axes[3] || 0;
+    control.rot(
+      Math.abs(horizontal) > GAMEPAD_MOVE_THRESHOLD ? -horizontal / 200 : 0,
+      Math.abs(vertical) > GAMEPAD_MOVE_THRESHOLD ? vertical / 200 : 0
+    );
+  }
+
+  return gamepadAction;
 }

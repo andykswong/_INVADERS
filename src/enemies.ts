@@ -1,16 +1,15 @@
-import { aabb, clamp, quat, ReadonlyAABB, vec3 } from 'munum';
-import { ALIEN_SKIN_COLOR, BLOOD_COLOR, ICE_COLOR, SILVER_COLOR } from './const';
+import { clamp, quat, ReadonlyAABB, vec3 } from 'munum';
+import { BLOOD_COLOR, FLIER_SHAPE, ICE_COLOR, SILVER_COLOR, WALKER_SHAPE, WATCHER_SHAPE } from './const';
 import { addParticles } from './core/graphics';
 import { Node } from './core/node';
 import { body, Body } from './core/physics';
 import { player, projectiles } from './init';
 import { Meshes } from './models/meshes';
-import { Projectile } from './projectiles';
+import { Projectile } from './projectile';
 
-const WALKER_SHAPE = aabb.create([-.5, 0, -.5], [.5, 1.5, .5]);
-const FLIER_SHAPE = aabb.create([-.6, 2.4, -.6], [.6, 3.6, .6]);
-const WATCHER_SHAPE = aabb.create([-.6, .4, -.6], [.6, 1.6, .6]);
-
+/**
+ * An enemy entity.
+ */
 export class Enemy extends Node {
   public animTimer: number = 0;
   public atkTimer: number = 0;
@@ -39,6 +38,9 @@ export class Enemy extends Node {
     }
   }
 
+  /**
+   * Shoot projectile.
+   */
   public shoot(): void {}
 
   public detach(): void {
@@ -53,11 +55,14 @@ export class Enemy extends Node {
       [this.body.pos[0] + this.body.shape.min[0], this.body.pos[1] + this.body.shape.min[1], this.body.pos[2] + this.body.shape.min[2]],
       [this.body.pos[0] + this.body.shape.max[0], this.body.pos[1] + this.body.shape.max[1], this.body.pos[2] + this.body.shape.max[2]],
       [-10, -10, -10], [10, 10, 10],
-      ALIEN_SKIN_COLOR
+      BLOOD_COLOR
     );
   }
 }
 
+/**
+ * Walker class enemy.
+ */
 export class Walker extends Enemy {
   public constructor(
     parent: Node,
@@ -92,6 +97,9 @@ export class Walker extends Enemy {
   }
 }
 
+/**
+ * Flier class enemy.
+ */
 export class Flier extends Enemy {
   public root: Node;
 
@@ -129,6 +137,9 @@ export class Flier extends Enemy {
   }
 }
 
+/**
+ * Watcher class enemy.
+ */
 export class Watcher extends Enemy {
   public constructor(
     parent: Node,

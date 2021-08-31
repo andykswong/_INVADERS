@@ -1,9 +1,8 @@
 import { Buffer, BufferType, RenderingDevice, Usage } from 'mugl';
 import { Mat4 } from 'munum';
+import { COMPONENTS_PER_MESH_INSTANCE } from '../const';
 import { Geometry } from './procedural';
 import { flatMap } from './utils';
-
-export const COMPONENTS_PER_MESH_INSTANCE = 16;
 
 /**
  * A renderable mesh instance.

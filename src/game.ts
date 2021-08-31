@@ -5,109 +5,83 @@ import { MeshInstance } from './core/mesh';
 import { Body, simulate } from './core/physics';
 import { zrand } from './core/utils';
 import { device, pass } from './device';
-import { beginnerBtn, coilIcon, crosshair, health, hitOverlay, nav, scoreText } from './dom';
-import { camera, control, enemies, player, projectiles, root, update } from './init';
+import { camera, enemies, player, projectiles, root } from './init';
 import { Player } from './player';
-import { playHit, playMusic } from './audio';
-import { introNode } from './intro';
-import { Projectile } from './projectiles';
+import { playHit } from './audio';
+import { Projectile } from './projectile';
 import { Enemy, Flier, Walker, Watcher } from './enemies';
 import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
-import { highscore, maxWave, save } from './save';
-import { Meshes } from './models/meshes';
 import { BeginnerWaves, BossWaves, Wave, WaveRow } from './models/waves';
+import { Screen, state, stateChangeListeners, updateState } from './state';
+
+let nextWaveCountdown = 0;
+let flyDir = -1.5, flyForward = 0;
+
+// React to state changes
+stateChangeListeners.push((newState, prevState, init) => {
+  if (init || newState.scr !== prevState.scr) {
+    if (newState.scr === Screen.Game) {
+      player.hp = newState.hp;
+    } else {
+      vec3.set(player.body!.pos, 0, 0, PLAYER_POS_Z);
+      vec3.set(player.body!.v, 0, 0, 0);
+      projectiles.child.length = 0;
+      enemies.child.length = 0;
+    }
+  }
+});
+
+// The game loop
+// =============
 
 const bodies: Body[] = [];
 const meshes: MeshInstance[] = [];
 
-let ingame = false, hasCoil = false, beginner = true;
-let score = 0, wave = 0, nextWaveCountdown = 0;
-let flyDir = -1.5, flyForward = 0;
+let lastTime = 0;
+requestAnimationFrame(loop);
+function loop(t: number) {
+  requestAnimationFrame(loop);
+  t = t / 1000
+  const dt = lastTime ? t - lastTime : 0;
+  lastTime = t;
 
-((document as any).monetization as HTMLElement)?.addEventListener('monetizationstart', () => {
-  hasCoil = true;
-  player.arm.mesh!.id = Meshes.coil;
-  coilIcon.style.opacity = '1';
-});
-
-export function toggleBeginner(value: boolean = !beginner): void {
-  beginnerBtn.innerText = `${(beginner = value) ? '☑' : '☐'} BEGINNER`;
-}
-
-export function startGame(): void {
-  ingame = true;
-  score = 0;
-  wave = -1;
-  player.hp = PLAYER_HP + (hasCoil ? 1 : 0);
-  introNode.hide = true;
-  crosshair.style.display = 'flex';
-  nav.style.display = 'none';
-  !control.touch && addEventListener('mouseup', resumeControl);
-  resumeControl();
-  checkWaveEnd();
-  playMusic();
-}
-
-function resumeControl(): void {
-  control.start();
-}
-
-export function endGame(): void {
-  ingame = false;
-  vec3.set(player.body!.pos, 0, 0, PLAYER_POS_Z);
-  vec3.set(player.body!.v, 0, 0, 0);
-  control.reset();
-  projectiles.child.length = enemies.child.length = 0;
-  introNode.hide = false;
-  crosshair.style.display = 'none';
-  nav.style.display = 'flex';
-  health.innerText = '';
-  save(score, wave);
-  scoreText.innerText = `HISCORE ${highscore}`;
-  toggleBeginner(maxWave < BeginnerWaves.length);
-  !control.touch && removeEventListener('mouseup', resumeControl);
-}
-endGame();
-
-update((t: number, dt: number): void => {
-  if (ingame) {
+  // Update game
+  if (state.scr === Screen.Game) {
+    checkWaveEnd();
     updateEnemy(dt);
-    
-    health.innerText = (player.hp > 0 ? `HP ${Array(player.hp|0).fill('⬤').join(' ')}` : '');
-    scoreText.innerText = `SCORE ${score}`;
-    if (player.hp <= 0) {
-      endGame();
+    if (state.hp !== player.hp) {
+      updateState({
+        'scr': player.hp <= 0 ? Screen.End : Screen.Game,
+        'hp': Math.max(player.hp, 0),
+      });
     }
   }
 
+  // Collect all bodies / meshes
   bodies.length = meshes.length = 0;
   traverse(root, (node) => {
     node.body && bodies.push(node.body);
     node.mesh && meshes.push(node.mesh);
   });
 
+  // Update nodes
   simulate(dt, bodies, hit);
   root.update(dt);
 
+  // Render
   const ctx = device.render(pass);
   renderMesh(ctx, camera, meshes);
   renderParticles(ctx, camera, t);
   ctx.end();
-});
-
-function playerHit(): void {
-  hitOverlay.classList.add('hit');
-  setTimeout(() => hitOverlay.classList.remove('hit'), 100);
-}
+};
 
 function hit(target: Body, by: Body): void {
   const targetNode = target.node;
   const byNode = by.node;
   if (byNode instanceof Projectile) {
     if (!byNode.p && targetNode instanceof Player) {
-      targetNode.hp -= byNode.hp;
       playHit();
-      playerHit();
+      player.hp -= byNode.hp;
       byNode.detach();
     } else if (byNode.p && targetNode instanceof Enemy) {
       if ((targetNode.hp -= byNode.hp) <= 0) {
@@ -115,9 +89,10 @@ function hit(target: Body, by: Body): void {
       }
       playHit();
       byNode.detach();
-      checkWaveEnd();
       player.timer = 0;
-      score++;
+      updateState({
+        score: state.score + 1,
+      });
     } else if (targetNode instanceof Projectile && targetNode.p !== byNode.p) {
       targetNode.detach();
       byNode.detach();
@@ -125,31 +100,27 @@ function hit(target: Body, by: Body): void {
       player.timer = 0;
     }
   } else if (byNode instanceof Enemy && targetNode instanceof Player) {
-    targetNode.hp--;
     playHit();
-    playerHit();
+    player.hp--;
     byNode.detach();
-    checkWaveEnd();
   }
 }
 
-function createEnemy(id: number): Enemy {
-  return (
-    id < 3 ? new Walker(enemies, id & 1) :
-    id < 5 ? new Flier(enemies, id & 1) :
-    new Watcher(enemies)
-  );
-}
+// Enemy Updates
+// =============
 
 function checkWaveEnd(): void {
-  if (!enemies.child.length) {
+  if (!nextWaveCountdown && !enemies.child.length) {
     nextWaveCountdown = ENEMY_WAVE_COUNTDOWN;
-    ++wave;
-    if (beginner && wave === BeginnerWaves.length) {
+    const wave = state.wave + 1;
+    if (state.beg && wave === BeginnerWaves.length) {
       player.hp = 5;
     } else if (wave && !(wave % WAVE_CYCLE)) {
       player.hp = Math.min(PLAYER_MAX_HP, player.hp + 2);
     }
+    updateState({
+      'wave': wave,
+    });
   }
 }
 
@@ -163,7 +134,7 @@ function generateWave(): Wave {
     data.push(slice);
   }
 
-  const count = 22 + Math.min(33, ((wave + 5) * Math.random()) | 0);
+  const count = 22 + Math.min(33, ((state.wave + 5) * Math.random()) | 0);
   for (let i = 0, iter = 0; i < count && iter < WAVE_GENERATOR_MAX_ITER; ++iter) {
     const z = (5 * zrand(2)) | 0;
     const y = (4 * zrand()) | 0;
@@ -185,9 +156,9 @@ function generateWave(): Wave {
 
 function populateWave(): void {
   const data =
-    (beginner && wave < BeginnerWaves.length) ? BeginnerWaves[wave] :
-    (wave % WAVE_CYCLE === WAVE_CYCLE - 1) ?
-      BossWaves[((wave < WAVE_CYCLE ? BEGINNER_BOSS_COUNT : BossWaves.length) * Math.random()) | 0] :
+    (state.beg && state.wave < BeginnerWaves.length) ? BeginnerWaves[state.wave] :
+    (state.wave % WAVE_CYCLE === WAVE_CYCLE - 1) ?
+      BossWaves[((state.wave < WAVE_CYCLE ? BEGINNER_BOSS_COUNT : BossWaves.length) * Math.random()) | 0] :
     generateWave();
   for (let z = 0; z < data.length; ++z) {
     for (let y = 0; y < data[z].length; ++y) {
@@ -196,12 +167,20 @@ function populateWave(): void {
         if (!id) { continue; }
 
         const enemy = createEnemy(id);
-        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (id < 3 || id === 5 ? 20 : 0), Math.min(9, (wave / 2) | 0) - z * 6 - y);
+        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (id < 3 || id === 5 ? 20 : 0), Math.min(9, (state.wave / 2) | 0) - z * 6 - y);
 
-        id < 3 && vec3.set(enemy.body.v, 0, 0, 1);
+        (id < 3) && vec3.set(enemy.body.v, 0, 0, 1);
       }
     }
   }
+}
+
+function createEnemy(id: number): Enemy {
+  return (
+    id < 3 ? new Walker(enemies, id & 1) :
+    id < 5 ? new Flier(enemies, id & 1) :
+    new Watcher(enemies)
+  );
 }
 
 function updateEnemy(dt: number): void {
@@ -218,9 +197,8 @@ function updateEnemy(dt: number): void {
     }
 
     if (enemy.m[14] > PLAYER_POS_Z) {
-      player.hp = 0;
       playHit();
-      playerHit();
+      player.hp = 0;
     }
   }
 

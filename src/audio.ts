@@ -1,6 +1,5 @@
 import { zzfx, zzfxP } from './core/audio';
-import { hit, shoot } from './models/sounds/effects';
-import { song } from './models/sounds/song';
+import { hit, shoot, song } from './models/sounds';
 
 let audioCtx: AudioContext;
 

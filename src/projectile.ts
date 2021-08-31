@@ -1,11 +1,13 @@
 import { aabb, ReadonlyVec4 } from 'munum';
+import { PROJECTILE_TTL } from './const';
 import { Node } from './core/node';
 import { addParticles } from './core/graphics';
 import { body } from './core/physics';
 import { playShoot } from './audio';
 
-export const PROJECTILE_TTL = 10;
-
+/**
+ * A projectile entity.
+ */
 export class Projectile extends Node {
   public dt: number = 0;
   public i: number = 0;

@@ -3,7 +3,7 @@ import { Camera } from './camera';
 import { MeshInstance } from './mesh';
 import { Body } from './physics';
 
-const SCALE: ReadonlyVec3 = [1, 1, 1];
+const UNIT_SCALE: ReadonlyVec3 = [1, 1, 1];
 
 /**
  * A 3d node hierarchy.
@@ -63,7 +63,7 @@ export class Node {
 
     this.body && vec3.copy(this.body.pos, this.t);
 
-    transform(this.t, this.r, SCALE, this.m);
+    transform(this.t, this.r, UNIT_SCALE, this.m);
     this.parent && mat4.mul(this.parent.m, this.m, this.m);
 
     this.mesh && (this.mesh.m = this.m);
