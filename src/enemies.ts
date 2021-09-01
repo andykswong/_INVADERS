@@ -1,11 +1,11 @@
 import { clamp, quat, ReadonlyAABB, vec3 } from 'munum';
-import { BLOOD_COLOR, FLIER_SHAPE, ICE_COLOR, SILVER_COLOR, WALKER_SHAPE, WATCHER_SHAPE } from './const';
+import { BLOOD_COLOR, FLIER_SHAPE, SILVER_COLOR, WALKER_SHAPE, WATCHER_SHAPE } from './const';
 import { addParticles } from './core/graphics';
 import { Node } from './core/node';
 import { body, Body } from './core/physics';
-import { player, projectiles } from './init';
+import { createProjectile } from './entities';
+import { player } from './init';
 import { Meshes } from './models/meshes';
-import { Projectile } from './projectile';
 
 /**
  * An enemy entity.
@@ -18,6 +18,7 @@ export class Enemy extends Node {
   public constructor(
     parent: Node,
     public id: number,
+    public type: number,
     shape: ReadonlyAABB,
     gravity: boolean,
     public hp: number,
@@ -32,7 +33,7 @@ export class Enemy extends Node {
 
     this.animTimer = (this.animTimer + dt) % (Math.PI * 2);
     this.atkTimer = Math.max(0, this.atkTimer - dt);
-    if (this.hp && !this.atkTimer && Math.random() < dt / 10 * this.id) {
+    if (this.hp && !this.atkTimer && Math.random() < dt / 10 * this.type) {
       this.atkTimer = this.atk;
       this.shoot();
     }
@@ -66,10 +67,11 @@ export class Enemy extends Node {
 export class Walker extends Enemy {
   public constructor(
     parent: Node,
+    id: number,
     public eyeType: number = 0,
     hp: number = 1
   ) {
-    super(parent, 1 + eyeType, WALKER_SHAPE, true, hp, 5);
+    super(parent, id, 1 + eyeType, WALKER_SHAPE, true, hp, 5);
 
     const eye = new Node(this);
     eye.mesh = { id: eyeType ? Meshes.eye2 : Meshes.eye };
@@ -90,9 +92,7 @@ export class Walker extends Enemy {
 
   public shoot(): void {
     if (this.eyeType) {
-      const projectile = new Projectile(projectiles, BLOOD_COLOR, false);
-      vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 1, this.m[14]);
-      vec3.set(projectile.body!.v, 0, 0, 10);
+      createProjectile(3, [this.m[12], this.m[13] + 1, this.m[14]], [0, 0, 10]);
     }
   }
 }
@@ -105,10 +105,11 @@ export class Flier extends Enemy {
 
   public constructor(
     parent: Node,
+    id: number,
     public eyeType: number = 0,
     hp: number = 1
   ) {
-    super(parent, 3 + eyeType, FLIER_SHAPE, false, hp, 3);
+    super(parent, id, 3 + eyeType, FLIER_SHAPE, false, hp, 3);
     const mesh = this.root = new Node(this);
     mesh.mesh = { id: eyeType ? Meshes.eye2 : Meshes.eye };
     const wing1 = new Node(mesh);
@@ -129,10 +130,9 @@ export class Flier extends Enemy {
 
   public shoot(): void {
     if (this.eyeType) {
-      const projectile = new Projectile(projectiles, BLOOD_COLOR, false);
-      vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 3, this.m[14]);
-      const projV = vec3.set(projectile.body!.v, 0, 0, 10);
-      quat.rotateVec3(projV, this.root.r, projV);
+      const v = vec3.create(0, 0, 10);
+      quat.rotateVec3(v, this.root.r, v);
+      createProjectile(3, [this.m[12], this.m[13] + 3, this.m[14]], v);
     }
   }
 }
@@ -143,15 +143,14 @@ export class Flier extends Enemy {
 export class Watcher extends Enemy {
   public constructor(
     parent: Node,
+    id: number,
     hp: number = 1
   ) {
-    super(parent, 5, WATCHER_SHAPE, true, hp, 0);
+    super(parent, id, 5, WATCHER_SHAPE, true, hp, 0);
     this.mesh = { id: Meshes.watcher };
   }
   
   public shoot(): void {
-    const projectile = new Projectile(projectiles, ICE_COLOR, false, .75);
-    vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 1, this.m[14]);
-    vec3.set(projectile.body!.v, 0, 0, 50);
+    createProjectile(4, [this.m[12], this.m[13] + 1, this.m[14]], [0, 0, 50]);
   }
 }

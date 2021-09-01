@@ -2,7 +2,7 @@ import { aabb, ReadonlyVec4 } from 'munum';
 import { PROJECTILE_TTL } from './const';
 import { Node } from './core/node';
 import { addParticles } from './core/graphics';
-import { body } from './core/physics';
+import { body, Body } from './core/physics';
 import { playShoot } from './audio';
 
 /**
@@ -11,6 +11,7 @@ import { playShoot } from './audio';
 export class Projectile extends Node {
   public dt: number = 0;
   public i: number = 0;
+  public body: Body;
 
   public constructor(
     parent: Node,
@@ -30,10 +31,10 @@ export class Projectile extends Node {
 
     if (++this.i % 2) {
       addParticles(16, 0.05 * this.s, 0.1 * this.s, .3 * this.s,
-        [this.body!.pos[0] - .2, this.body!.pos[1] - .2, this.body!.pos[2] - .2],
-        [this.body!.pos[0] + .2, this.body!.pos[1] + .2, this.body!.pos[2] + .2],
-        [Math.min(0, -this.body!.v[0]) - 5 * this.s, Math.min(0, -this.body!.v[1]) - 5 * this.s, Math.min(0, -this.body!.v[1]) - 5 * this.s],
-        [Math.max(0, -this.body!.v[0]) + 5 * this.s, Math.max(0, -this.body!.v[1]) + 5 * this.s, Math.max(0, -this.body!.v[1]) + 5 * this.s],
+        [this.body.pos[0] - .2, this.body.pos[1] - .2, this.body.pos[2] - .2],
+        [this.body.pos[0] + .2, this.body.pos[1] + .2, this.body.pos[2] + .2],
+        [Math.min(0, -this.body.v[0]) - 5 * this.s, Math.min(0, -this.body.v[1]) - 5 * this.s, Math.min(0, -this.body.v[1]) - 5 * this.s],
+        [Math.max(0, -this.body.v[0]) + 5 * this.s, Math.max(0, -this.body.v[1]) + 5 * this.s, Math.max(0, -this.body.v[1]) + 5 * this.s],
         this.c
       );
     }
@@ -46,8 +47,8 @@ export class Projectile extends Node {
   public detach(): void {
     super.detach();
     addParticles(32, 0.2, 0.4, .2 * this.s,
-      [this.body!.pos[0] - .2, this.body!.pos[1] - .2, this.body!.pos[2] - .2],
-      [this.body!.pos[0] + .2, this.body!.pos[1] + .2, this.body!.pos[2] + .2],
+      [this.body.pos[0] - .2, this.body.pos[1] - .2, this.body.pos[2] - .2],
+      [this.body.pos[0] + .2, this.body.pos[1] + .2, this.body.pos[2] + .2],
       [-10 * this.s, -10 * this.s, -10 * this.s], [10 * this.s, 10 * this.s, 10 * this.s],
       this.c
     );

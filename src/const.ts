@@ -1,8 +1,15 @@
 import { aabb, ReadonlyAABB, ReadonlyVec3, ReadonlyVec4 } from 'munum';
 
-// Game save configs
-// =================
-export const SAVE_KEY = '_INVADERS';
+// Game configs
+// ============
+
+export const GAME_NAME = '_INVADERS';
+
+// WebRTC configs
+// ==============
+
+export const ICE_SERVER_URLS = 'stun:stun.l.google.com:19302';
+export const ICE_GATHERING_TIME_MS = 2000;
 
 // Control configs
 // ===============
@@ -12,6 +19,7 @@ export const TOCUH_MOVE_THRESHOLD = 0.02 as const;
 
 // Graphics configs
 // ================
+
 export const COMPONENTS_PER_MESH_INSTANCE = 16 as const;
 export const COMPONENTS_PER_PARTICLE = 12 as const;
 
@@ -79,8 +87,9 @@ export const WAND_COLOR: ReadonlyVec4 = [.89, .38, .17, -.95];
 export const COIL_HEAD_COLOR: ReadonlyVec4 = [.95, .85, .45, -.9];
 export const COIL_COLOR: ReadonlyVec4 = [.78, .74, .68, -.5];
 
-// NFT Storage configs
-// ===================
+// IPFS configs
+// ============
 
+export const IPFS_GATEWAY_ENDPOINT = 'https://cloudflare-ipfs.com';
 export const NFT_STORAGE_ENDPOINT = 'https://api.nft.storage/upload';
 export const NFT_SOTRAGE_KEY = process.env.NFT_SOTRAGE_KEY;

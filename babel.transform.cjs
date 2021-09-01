@@ -2,8 +2,10 @@ const { types } = require('@babel/core');
 const syntaxTypeScript = require('@babel/plugin-syntax-typescript').default;
 
 /**
- * Plugin to help minifying the JS.
- * Currently it only transpiles all enums into const object for inlining.
+ * Plugin to help minifying the JS:
+ * - Transpiles all enums into const object for inlining
+ * - Replace all const with let
+ * - Remove unused class methods
  */
 module.exports = function minify() {
   return {
@@ -15,6 +17,12 @@ module.exports = function minify() {
           tsEnumDeclarationToConstObject(path)
         );
         path.scope.registerDeclaration(constObjectPath);
+      },
+      VariableDeclaration(path) {
+        path.replaceWith(variableDeclarationToLet(path));
+      },
+      ClassDeclaration(path) {
+        path.replaceWith(removeMethodsFromClassDeclaration(path));
       },
     },
   };
@@ -32,9 +40,33 @@ function tsEnumDeclarationToConstObject(path) {
 }
 
 function tsEnumMembersToObjectProperties(memberPaths) {
-  return memberPaths.map((path) => {
-    const keyNode = path.node.id;
-    const valueNode = path.node.initializer;
+  return memberPaths.map(({ node }) => {
+    const keyNode = node.id;
+    const valueNode = node.initializer;
     return types.objectProperty(keyNode, valueNode);
   });
+}
+
+function variableDeclarationToLet({ node }) {
+  if (node.kind === 'const') {
+    node.kind = 'let';
+  }
+  return node;
+}
+
+function removeMethodsFromClassDeclaration(path) {
+  const { node } = path;
+  const name = node.id.name;
+  if (['NanoGLRenderingDevice', 'NanoGLRenderPassContext'].includes(name)) {
+    const properties = [];
+    for (const property of node.body.body) {
+      const propName = property.key.name;
+      if (['texture', 'scissor', 'blendColor', 'stencilRef', 'viewport'].includes(propName)) {
+        continue;
+      }
+      properties.push(property);
+    }
+    node.body.body = properties;
+  }
+  return node;
 }

@@ -47,11 +47,13 @@ export class Node {
    * Detach itself from parent.
    */
   public detach(): void {
-    const siblings = this.parent?.child!;
-    const i = siblings ? siblings.indexOf(this) : -1;
-    if (i >= 0) {
-      siblings[i] = siblings[siblings.length - 1];
-      siblings.pop();
+    if (this.parent) {
+      const siblings = this.parent.child;
+      const i = siblings.indexOf(this);
+      if (i >= 0) {
+        siblings[i] = siblings[siblings.length - 1];
+        siblings.pop();
+      }
     }
   }
 
@@ -67,7 +69,7 @@ export class Node {
     this.parent && mat4.mul(this.parent.m, this.m, this.m);
 
     this.mesh && (this.mesh.m = this.m);
-    this.cam?.update(this.m);
+    this.cam && this.cam.update(this.m);
 
     for (const node of this.child) {
       node.update(dt);

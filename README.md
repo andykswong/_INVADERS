@@ -9,7 +9,7 @@
 ## Gameplay
 - Defeat endless waves of monsters in a confined space.
 - Familiar gameplay elements from Space Invaders:
-  - Start with 3 lives (5 for beginner mode)
+  - Start with 3 lives (4 for beginner mode)
   - No timer, but the game ends immediately if the monsters reach the space behind you.
   - The space between you and the monsters are reduced for each new wave
   - Flier class monsters behave the same as aliens in Space Invaders (see below).

@@ -1,4 +1,4 @@
-import { NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT } from './const';
+import { IPFS_GATEWAY_ENDPOINT, NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT } from './const';
 import { beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, nav, scoreText, screenshotBtn, startBtn } from './dom';
 import { Screen, startGame, state, stateChangeListeners, updateState } from './state';
 import { playMusic } from './audio';
@@ -47,7 +47,7 @@ screenshotBtn.addEventListener('click', () => {
       })
         .then(response => response.json())
         .then(data => {
-          open(`https://cloudflare-ipfs.com/ipfs/${data['value']['cid']}`, '_blank');
+          open(`${IPFS_GATEWAY_ENDPOINT}/ipfs/${data['value']['cid']}`, '_blank');
           screenshotReady = true;
         });
     });

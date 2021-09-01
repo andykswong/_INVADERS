@@ -9,9 +9,6 @@ module.exports = api => {
     "plugins": [
       ["./babel.transform.cjs"]
     ],
-    "ignore": [
-      "node_modules"
-    ],
     "comments": false,
     "minified": !isTest
   };

@@ -46,7 +46,7 @@ export class FpsControl {
     if (!this.paused) { return; }
     if (this.touch) {
       this.touchCtrl(true);
-      document.body.requestFullscreen?.();
+      document.body.requestFullscreen && document.body.requestFullscreen();
       this.paused = false;
     } else {
       this.canvas.requestPointerLock();
@@ -107,7 +107,7 @@ export class FpsControl {
   }
 
   private lock = (): void => {
-    const fn = (this.paused = document.pointerLockElement !== this.canvas) ? removeEventListener : addEventListener;
+    const fn = !(this.paused = document.pointerLockElement !== this.canvas) ? addEventListener : removeEventListener;
     fn('mousemove', this.mousemove);
     fn('mousedown', this.mousedown);
     fn('mouseup', this.mouseup);
@@ -221,11 +221,14 @@ function mapKeyToAction(key: string): Action {
 }
 
 function processGamepad(control: FpsControl): Action {
-  const gamepad = navigator.getGamepads?.()[0];
+  const gamepad = navigator.getGamepads && navigator.getGamepads()[0];
   let gamepadAction = Action.None;
 
   if (gamepad) {
-    if (gamepad.buttons[0]?.pressed || gamepad.buttons[7]?.pressed) {
+    if (
+      (gamepad.buttons[0] && gamepad.buttons[0].pressed) ||
+      (gamepad.buttons[7] && gamepad.buttons[7].pressed)
+    ) {
       gamepadAction = gamepadAction | Action.A;
     }
 

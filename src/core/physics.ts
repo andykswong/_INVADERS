@@ -64,7 +64,7 @@ export function simulate(dt: number, bodies: Body[], hit?: (target: Body, by: Bo
       aabb.transform(bodies[j].shape, translate(bodies[j].pos, tmpMat), tmpAABB2);
 
       if (intersect(tmpAABB1, tmpAABB2)) {
-        hit?.(bodies[i], bodies[j]);
+        hit && hit(bodies[i], bodies[j]);
       }
     }
   }

@@ -1,18 +1,19 @@
 import { vec3 } from 'munum';
+import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
 import { device, pass } from './core/device';
 import { renderMesh, renderParticles } from './core/graphics';
 import { MeshInstance } from './core/mesh';
 import { traverse } from './core/node';
 import { Body, simulate } from './core/physics';
 import { zrand } from './core/utils';
-import { camera, enemies, player, projectiles, root } from './init';
-import { Player } from './player';
-import { playHit } from './audio';
-import { Projectile } from './projectile';
-import { Enemy, Flier, Walker, Watcher } from './enemies';
-import { BEGINNER_BOSS_COUNT, ENEMY_WAVE_COUNTDOWN, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
 import { BeginnerWaves, BossWaves, Wave, WaveRow } from './models/waves';
 import { Screen, state, stateChangeListeners, updateState } from './state';
+import { camera, enemies, player, projectiles, root } from './init';
+import { playHit } from './audio';
+import { Player } from './player';
+import { Projectile } from './projectile';
+import { Enemy } from './enemies';
+import { createEnemy } from './entities';
 
 let nextWaveCountdown = 0;
 let flyDir = -1.5, flyForward = 0;
@@ -23,8 +24,8 @@ stateChangeListeners.push((newState, prevState, init) => {
     if (newState.scr === Screen.Game) {
       player.hp = newState.hp;
     } else {
-      vec3.set(player.body!.pos, 0, 0, PLAYER_POS_Z);
-      vec3.set(player.body!.v, 0, 0, 0);
+      vec3.set(player.body.pos, 0, 0, PLAYER_POS_Z);
+      vec3.set(player.body.v, 0, 0, 0);
       projectiles.child.length = 0;
       enemies.child.length = 0;
     }
@@ -117,7 +118,7 @@ function updateWave(dt: number): void {
 
     if (state.beg && wave <= BeginnerWaves.length) {
       // Beginner gets extra health and heal during the beginner waves
-      player.hp = 5;
+      player.hp = PLAYER_HP + (state.coil ? 1 : 0) + 1;
     } else if (wave && !(wave % WAVE_CYCLE)) {
       // +2 HP after every miniboss
       player.hp = Math.min(PLAYER_MAX_HP, player.hp + 2);
@@ -173,20 +174,21 @@ function generateWave(): Wave {
   return data;
 }
 
-function populateWave(data: Wave): void {
+function populateWave(data: Wave): number {
+  let id = 0;
   for (let z = 0; z < data.length; ++z) {
     for (let y = 0; y < data[z].length; ++y) {
       for (let x = 0; x < 11; ++x) {
-        const id = data[z][data[z].length - y - 1][x];
-        if (!id) { continue; }
+        const type = data[z][data[z].length - y - 1][x];
+        if (!type) { continue; }
 
-        const enemy = createEnemy(id);
-        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (id < 3 || id === 5 ? 20 : 0), Math.min(15, (state.wave / 2) | 0) - z * 6 - y);
-
-        (id < 3) && vec3.set(enemy.body.v, 0, 0, 1);
+        const enemy = createEnemy(type, id++);
+        vec3.set(enemy.body.pos, (x - 5) * 3, y * 3 + (type < 3 || type === 5 ? 20 : 0), Math.min(15, (state.wave / 2) | 0) - z * 6 - y);
+        (type < 3) && vec3.set(enemy.body.v, 0, 0, 1);
       }
     }
   }
+  return id;
 }
 
 function updateEnemies(dt: number): void {
@@ -194,7 +196,7 @@ function updateEnemies(dt: number): void {
 
   let min = 20, max = -20;
   for (const enemy of (enemies.child as Enemy[])) {
-    if (enemy.id === 3 || enemy.id === 4) {
+    if (enemy.type === 3 || enemy.type === 4) {
       min = Math.min(min, enemy.m[12]);
       max = Math.max(max, enemy.m[12]);
     }
@@ -211,16 +213,8 @@ function updateEnemies(dt: number): void {
   }
 
   for (const enemy of (enemies.child as Enemy[])) {
-    if (enemy.id === 3 || enemy.id === 4) {
+    if (enemy.type === 3 || enemy.type === 4) {
       vec3.set(enemy.body.v, flyDir, 0, flyForward ? 1 : 0);
     }
   }
-}
-
-function createEnemy(id: number): Enemy {
-  return (
-    id < 3 ? new Walker(enemies, id & 1) :
-    id < 5 ? new Flier(enemies, id & 1) :
-    new Watcher(enemies)
-  );
 }

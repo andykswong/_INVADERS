@@ -1,18 +1,18 @@
 import { quat, vec3 } from 'munum';
 import { Meshes } from './models/meshes';
-import { ENERGY_COLOR, FIRE_COLOR, PLAYER_ATTACK_TIME, PLAYER_BOUND, PLAYER_HP, PLAYER_SHAPE } from './const';
+import { PLAYER_ATTACK_TIME, PLAYER_BOUND, PLAYER_HP, PLAYER_SHAPE } from './const';
 import { Camera } from './core/camera';
 import { FpsControl } from './core/control';
 import { Node } from './core/node';
-import { body } from './core/physics';
-import { projectiles } from './init';
-import { Projectile } from './projectile';
+import { body, Body } from './core/physics';
+import { createProjectile } from './entities';
 
 /**
  * A player entity.
  */
 export class Player extends Node {
   public timer: number = 0;
+  public body: Body;
   public arm: Node;
 
   private cn: Node;
@@ -51,21 +51,22 @@ export class Player extends Node {
     quat.rotateY(this.control.rotY, this.r);
 
     const dir = this.control.dir;
-    const v = this.body!.v;
+    const v = this.body.v;
 
     v[0] = dir[0] * 10;
-    v[1] = this.body!.pos[1] && dir[1] ? 20 : v[1];
+    v[1] = this.body.pos[1] && dir[1] ? 20 : v[1];
     v[2] = dir[2] * 10;
 
     super.update(dt);
 
     if (attack) {
-      const projectile = (this.arm.mesh!.id === Meshes.wand) ?
-        new Projectile(projectiles, FIRE_COLOR, true) :
-        new Projectile(projectiles, ENERGY_COLOR, true, 2.5);
-      const projV = vec3.set(projectile.body!.v, 0, 0, 25);
-      quat.rotateVec3(quat.rotateVec3(projV, this.cn.r, projV), this.r, projV);
-      vec3.set(projectile.body!.pos, this.m[12], this.m[13] + 1.7, this.m[14]);
+      const v = vec3.create(0, 0, 25);
+      quat.rotateVec3(quat.rotateVec3(v, this.cn.r, v), this.r, v);
+      createProjectile(
+        (this.arm.mesh!.id === Meshes.wand) ? 1 : 2,
+        [this.m[12], this.m[13] + 1.7, this.m[14]],
+        v
+      );
     }
 
     const theta = this.timer ? (Math.sin(6 * (PLAYER_ATTACK_TIME - this.timer)) + 1) / 2 : 0;
