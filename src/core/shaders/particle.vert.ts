@@ -13,17 +13,14 @@ export const raw = `
 uniform mat4 vp;
 uniform float vw, ct;
 
-attribute vec3 p;
-attribute vec3 v;
-attribute float t;
-attribute float s;
-attribute vec4 c;
+attribute vec4 p, v, c;
+attribute float t, s;
 varying vec4 vC;
 
 void main () {
   vC = vec4(c.rgb, c.a * (1. - mod(ct, t) / t / 2.));
-  gl_Position = vp * vec4(p + mod(ct, t) * v, 1.);
-  gl_PointSize = vw / gl_Position.w * (1. - mod(ct, t) / t)) * s;
+  gl_Position = vp * vec4((p + mod(ct, t) * v).xyz, 1.);
+  gl_PointSize = vw / gl_Position.w * (1. - mod(ct, t) / t) * s;
 }
 `;
 
@@ -31,4 +28,4 @@ void main () {
  * Minified particle vertex shader.
  * @see http://ctrl-alt-test.fr/minifier/index
  */
-export default 'uniform mat4 vp;uniform float vw,ct;attribute vec3 p,v;attribute float t,s;attribute vec4 c;varying vec4 vC;void main(){vC=vec4(c.xyz,c.w*(1.-mod(ct,t)/t/2.)),gl_Position=vp*vec4(p+mod(ct,t)*v,1.),gl_PointSize=vw/gl_Position.w*(1.-mod(ct,t)/t)*s;}';
+export default 'uniform mat4 vp;uniform float vw,ct;attribute vec4 p,v,c;attribute float t,s;varying vec4 vC;void main(){vC=vec4(c.xyz,c.w*(1.-mod(ct,t)/t/2.)),gl_Position=vp*vec4((p+mod(ct,t)*v).xyz,1.),gl_PointSize=vw/gl_Position.w*(1.-mod(ct,t)/t)*s;}';

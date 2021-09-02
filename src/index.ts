@@ -7,6 +7,7 @@ import { init } from './state';
 import './intro';
 import './ui';
 import './game';
+import './multiplayer';
 
 init();
 

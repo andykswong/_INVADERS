@@ -49,9 +49,21 @@ Subscribers should see the [Coil](https://coil.com/) icon (𝒞) at the bottom-r
 
 ![Coil Weapon](screenshots/coil.png)
 
-## Completely Optional Decentralized Features
-- The game itself is on IPFS: https://cloudflare-ipfs.com/ipfs/QmQPxoC3G3KM78VDmZ4chsHSAuD3DA2WZX95XVi61u9Tre
+## Optional Decentralized Features
+IPFS:
+- The game itself is on IPFS: https://cloudflare-ipfs.com/ipfs/QmQzbbLR2h2DFapsJYqrLEbapFVez2PPXM8VDBLywi5Q8S
 - Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS / [nft.storage](https://nft.storage/)! A convenient way to make NFTs out of your gameplay screenshots!
+
+CO-OP Mode:
+- Play with friends using serverless WebRTC P2P connection!
+- To connect:
+  1. Player 1 clicks HOST to get the OFFER code
+  1. Player 1 sends OFFER code to Player 2
+  1. Player 2 pastes OFFER code and clicks JOIN
+  1. Player 2 sends ANSWER code to Player 1
+  1. Player 1 pastes ANSWER code and clicks START to enter the game
+  1. Player 2 clicks START to enter the game
+
 
 ## Browser Support
 - Latest Desktop Chrome, Firefox, Edge, or Safari with WebGL 1.0 enabled

@@ -22,6 +22,7 @@
     "@babel/preset-env": "^7.15.0",
     "@babel/preset-typescript": "^7.15.0",
     "7zip-bin": "^5.1.1",
+    "advzip-bin": "^2.0.0",
     "babel-loader": "^8.2.2",
     "cross-env": "^7.0.3",
     "dotenv-webpack": "^7.0.3",

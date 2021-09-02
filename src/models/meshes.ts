@@ -1,9 +1,10 @@
 import { device } from '../core/device';
 import { addMesh } from '../core/graphics';
 import { mesh } from '../core/mesh';
-import { coil, eyeball, eyeball2, foot, ground, wand, watcher, wing } from './geometries';
+import { coil, eyeball, eyeball2, foot, ground, playerBody, wand, watcher, wing } from './geometries';
 
 export const Meshes = {
+  player: addMesh(mesh(device, playerBody, 16)),
   ground: addMesh(mesh(device, ground, 16)),
   wand: addMesh(mesh(device, wand, 16)),
   coil: addMesh(mesh(device, coil, 16)),

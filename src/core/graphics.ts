@@ -11,7 +11,6 @@ import { device } from './device';
 import { canvas } from '../dom';
 
 const I: ReadonlyMat4 = mat4.create();
-const vp: Mat4 = mat4.create();
 const tmpV3: Vec3 = vec3.create();
 
 const pipeline: Pipeline = device.pipeline({
@@ -90,8 +89,6 @@ export function addMesh(mesh: Mesh): number {
  * Render meshes using the given camera.
  */
 export function renderMesh(ctx: RenderPassContext, camera: Camera, instances: MeshInstance[]): void {
-  mat4.mul(camera.proj, camera.view, vp);
-
   for (const mesh of meshes) {
     mesh.iCount = 0;
   }
@@ -99,12 +96,16 @@ export function renderMesh(ctx: RenderPassContext, camera: Camera, instances: Me
   instances.sort((a, b) => a.id - b.id);
   for (const instance of instances) {
     const mesh = meshes[instance.id];
-    array.copy(instance.m || I, mesh.iData, 0, (mesh.iCount++) * COMPONENTS_PER_MESH_INSTANCE);
+    if ((mesh.iCount + 1) * COMPONENTS_PER_MESH_INSTANCE <= mesh.iData.length) {
+      array.copy(instance.m || I, mesh.iData, 0, (mesh.iCount++) * COMPONENTS_PER_MESH_INSTANCE);
+    } else {
+      process.env.DEBUG && console.warn('instance buffer overflow', instance.id, mesh);
+    }
   }
 
   ctx.pipeline(pipeline)
     .uniforms([
-      { name: 'vp', values: vp },
+      { name: 'vp', values: mat4.mul(camera.proj, camera.view) },
       { name: 'p', values: camera.pos },
       { name: 'f', values: SKY_COLOR },
     ]);
@@ -151,11 +152,10 @@ export function addParticles(count: number, time: number, maxLife: number, size:
 export function renderParticles(ctx: RenderPassContext, camera: Camera, time: number): void {
   if (!particleGroups.length) return;
 
-  mat4.mul(camera.proj, camera.view, vp);
   ctx.pipeline(particlePipeline)
     .vertex(0, particleBuffer)
     .uniforms([
-      { name: 'vp', values: vp },
+      { name: 'vp', values: mat4.mul(camera.proj, camera.view) },
       { name: 'vw', value: canvas.width },
       { name: 'ct', value: time }
     ]);

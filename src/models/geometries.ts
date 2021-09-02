@@ -32,13 +32,17 @@ merge(watcher, back);
 
 export const foot = box(.2, .1, .3, ALIEN_SKIN_COLOR);
 
-const stick = box(.04, .8, .04, WOOD_COLOR);
+export const playerBody = box(.4, .4, .4, SAND_COLOR);
+export const playerBody2 = box(.3, .3, .3, BLUE_COLOR);
+trans(playerBody, translate([0, 1.7, 0]));
+trans(playerBody2, translate([0, .7, 0]));
+merge(playerBody, playerBody2);
 
 export const wand = box(.1, .1, .1, WAND_COLOR);
 trans(wand, rotateAxis([0, 0, 1], Math.PI/4));
 trans(wand, scale([1, 1.5, .38]));
 trans(wand, translate([0, .95, 0]));
-merge(wand, stick);
+merge(wand, box(.04, .8, .04, WOOD_COLOR));
 
 const coil1 = empty();
 merge(coil1, trans(box(.1, .012, .012, COIL_COLOR), translate([0, 0, -.105])));
@@ -46,9 +50,8 @@ merge(coil1, trans(box(.12, .01, .012, COIL_COLOR), translate([0, 0, .105])));
 merge(coil1, trans(box(.01, .01, .12, COIL_COLOR), translate([-.105, 0, 0])));
 merge(coil1, trans(box(.01, .01, .12, COIL_COLOR), translate([.105, 0, 0])));
 export const coil = merge(empty(), coil1);
-trans(coil, translate([0, -.03, 0]));
 trans(coil1, scale([.8, 1, .8]));
-trans(coil1, translate([0, .05, 0]));
+trans(coil1, translate([0, .09, 0]));
 merge(coil, coil1);
 trans(coil1, scale([.8, 1, .8]));
 trans(coil1, translate([0, .09, 0]));

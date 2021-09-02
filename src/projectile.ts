@@ -9,16 +9,16 @@ import { playShoot } from './audio';
  * A projectile entity.
  */
 export class Projectile extends Node {
-  public dt: number = 0;
-  public i: number = 0;
+  private dt: number = 0;
+  private i: number = 0;
+  public remote!: boolean;
   public body: Body;
 
   public constructor(
     parent: Node,
     public c: ReadonlyVec4,
     public p: boolean,
-    public s: number = 1,
-    public hp: number = 1
+    public s: number = 1
   ) {
     super(parent);
     const ns = Math.max(1, s / 2);

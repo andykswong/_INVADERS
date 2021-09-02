@@ -1,11 +1,18 @@
+import fs from 'fs';
+import { execFile } from 'child_process';
+import advzip from 'advzip-bin';
 import sevenBin from '7zip-bin';
 import Seven from 'node-7z';
 
-const pathTo7zip = sevenBin.path7za;
-const stream = Seven.add('./dist/game.zip', './dist/index.html', {
-  $bin: pathTo7zip,
-  method: ['m=LZMA', 'x=9']
+const OUTPUT = 'dist.zip';
+
+const stream = Seven.add(OUTPUT, './public/index.html', {
+  $bin: sevenBin.path7za,
+  method: ['m=Deflate', 'x=9']
 });
+
 stream.on('end', () => {
-  console.log(stream.info);
+  execFile(advzip, ['--recompress', '--shrink-insane', OUTPUT], () => {
+    console.log(`Output zip file: ${OUTPUT}, size: ${fs.statSync(OUTPUT).size} bytes`);
+  });
 });

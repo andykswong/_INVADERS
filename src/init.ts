@@ -16,6 +16,8 @@ export const projectiles = new Node(root);
 export const camera = new Camera();
 export const control = new FpsControl(canvas, attackBtn);
 export const player = new Player(root, camera, control);
+export const player2 = new Player(root);
+player2.hide = true;
 
 // Setup sky and ground
 

@@ -5,8 +5,9 @@ import { PLAYER_HP } from './const';
  */
 export enum Screen {
   Menu = 1 << 0,
-  Game = 1 << 1,
-  End = 1 << 2,
+  Multiplayer = 1 << 1,
+  Game = 1 << 2,
+  End = 1 << 3,
 }
 
 /**
@@ -28,6 +29,12 @@ export interface State {
   /** Use coil weapon? */
   coil: boolean;
 
+  /** Is multiplayer host? */
+  host: boolean;
+
+  /** Is playing p2p multiplayer? */
+  p2p: boolean;
+
   /** Current score */
   score: number;
 
@@ -46,6 +53,8 @@ export let state: Readonly<State> = {
   'touch': false,
   'sub': false,
   'coil': false,
+  'p2p': false,
+  'host': true,
   'beg': true,
   'hp': 0,
   'score': 0,
@@ -62,9 +71,7 @@ export function updateState(delta: Partial<State>, init: boolean = false): void 
   const prevState = state;
   state = { ...state, ...delta };
 
-  if (process.env.DEBUG) {
-    console.log(`state ${init ? 'init' : 'update'}`, delta, state);
-  }
+  process.env.DEBUG && console.log(`state ${init ? 'init' : 'update'}`, delta, state);
 
   for (const listener of stateChangeListeners) {
     listener(state, prevState, init);
@@ -84,13 +91,16 @@ export function init(): void {
 /**
  * Start game action.
  */
-export function startGame(touch: boolean): void {
+export function startGame(touch: boolean, multiplayer: boolean = false): void {
   updateState({
     'scr': Screen.Game,
     'hp': PLAYER_HP + (state.coil ? 1 : 0),
     'score': 0,
     'wave': -1,
     'touch': touch,
+    'p2p': multiplayer,
+    'host': !multiplayer || state.host,
+    'beg': !multiplayer && state.beg,
   });
 }
 

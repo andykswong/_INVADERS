@@ -9,7 +9,8 @@ export const GAME_NAME = '_INVADERS';
 // ==============
 
 export const ICE_SERVER_URLS = 'stun:stun.l.google.com:19302';
-export const ICE_GATHERING_TIME_MS = 2000;
+export const ICE_GATHERING_TIME_MS = 3000;
+export const CONNECTION_TIMEOUT_MS = 15000;
 
 // Control configs
 // ===============
@@ -35,6 +36,7 @@ export const GRAVITY: ReadonlyVec3 = [0, -15, 0];
 
 export const PLAYER_HP = 3 as const;
 export const PLAYER_MAX_HP = 5 as const;
+export const MULTIPLAYER_POS_X = 10 as const;
 export const PLAYER_POS_Z = 45 as const;
 export const PLAYER_ATTACK_TIME = .5 as const;
 export const PLAYER_SHAPE: ReadonlyAABB = aabb.create([-.5, 0, -.5], [.5, 2, .5]);

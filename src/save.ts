@@ -8,6 +8,7 @@ try {
   highscore = +(save['s'] || 0);
   maxWave = +(save['w'] || 0);
 } catch(e) {
+  process.env.DEBUG && console.warn('localStorage.getItem error', e);
 }
 
 export function save(score: number, wave: number): void {
@@ -17,5 +18,6 @@ export function save(score: number, wave: number): void {
       'w': (maxWave = Math.max(maxWave, wave)),
     }));
   } catch(e) {
+    process.env.DEBUG && console.warn('localStorage.setItem error', e, score, wave);
   }
 }

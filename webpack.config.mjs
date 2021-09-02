@@ -13,7 +13,7 @@ const mode = process.env.NODE_ENV || PRODUCTION;
 const isProd = mode === PRODUCTION;
 export const debug = process.env.DEBUG || !isProd;
 
-const OUTPUT_DIR = path.resolve('./dist');
+const OUTPUT_DIR = path.resolve('./public');
 
 export default {
   mode,
@@ -25,6 +25,7 @@ export default {
   output: {
     filename: '[name].js',
     path: OUTPUT_DIR,
+    iife: false,
   },
   module: {
     rules: [
@@ -56,9 +57,14 @@ export default {
           toplevel: true,
           compress: {
             passes: 5,
-            drop_console: true
+            drop_console: true,
+            unsafe: true,
+            unsafe_arrows: true,
+            unsafe_math: true,
+            unsafe_methods: true,
           },
           mangle: {
+            module: true,
             properties: {
               keep_quoted: true
             }

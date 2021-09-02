@@ -8,7 +8,7 @@ export function playMusic(): void {
     audioCtx = new AudioContext();
 
     const gain = audioCtx.createGain();
-    gain.gain.value = .4;
+    gain.gain.value = .3;
     gain.connect(audioCtx.destination);
     const music = zzfxP(audioCtx, ...song);
     music.loop = true;

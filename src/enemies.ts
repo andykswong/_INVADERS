@@ -1,18 +1,18 @@
 import { clamp, quat, ReadonlyAABB, vec3 } from 'munum';
-import { BLOOD_COLOR, FLIER_SHAPE, SILVER_COLOR, WALKER_SHAPE, WATCHER_SHAPE } from './const';
-import { addParticles } from './core/graphics';
+import { FLIER_SHAPE, WALKER_SHAPE, WATCHER_SHAPE } from './const';
 import { Node } from './core/node';
 import { body, Body } from './core/physics';
 import { createProjectile } from './entities';
 import { player } from './init';
 import { Meshes } from './models/meshes';
+import { createDestructionParticles } from './particles';
 
 /**
  * An enemy entity.
  */
 export class Enemy extends Node {
-  public animTimer: number = 0;
-  public atkTimer: number = 0;
+  protected animTimer: number = 0;
+  protected atkTimer: number = 0;
   public body: Body;
 
   public constructor(
@@ -21,8 +21,7 @@ export class Enemy extends Node {
     public type: number,
     shape: ReadonlyAABB,
     gravity: boolean,
-    public hp: number,
-    public atk: number
+    protected atk: number
   ) {
     super(parent);
     this.body = body(this, shape, gravity);
@@ -33,7 +32,7 @@ export class Enemy extends Node {
 
     this.animTimer = (this.animTimer + dt) % (Math.PI * 2);
     this.atkTimer = Math.max(0, this.atkTimer - dt);
-    if (this.hp && !this.atkTimer && Math.random() < dt / 10 * this.type) {
+    if (this.id && !this.atkTimer && Math.random() < dt / 10 * this.type) {
       this.atkTimer = this.atk;
       this.shoot();
     }
@@ -46,18 +45,7 @@ export class Enemy extends Node {
 
   public detach(): void {
     super.detach();
-    addParticles(32, 0.2, 0.4, .3,
-      [this.body.pos[0] + this.body.shape.min[0], this.body.pos[1] + this.body.shape.min[1], this.body.pos[2] + this.body.shape.min[2]],
-      [this.body.pos[0] + this.body.shape.max[0], this.body.pos[1] + this.body.shape.max[1], this.body.pos[2] + this.body.shape.max[2]],
-      [-10, -10, -10], [10, 10, 10],
-      SILVER_COLOR
-    );
-    addParticles(64, 0.2, 0.4, .2,
-      [this.body.pos[0] + this.body.shape.min[0], this.body.pos[1] + this.body.shape.min[1], this.body.pos[2] + this.body.shape.min[2]],
-      [this.body.pos[0] + this.body.shape.max[0], this.body.pos[1] + this.body.shape.max[1], this.body.pos[2] + this.body.shape.max[2]],
-      [-10, -10, -10], [10, 10, 10],
-      BLOOD_COLOR
-    );
+    createDestructionParticles(this);
   }
 }
 
@@ -68,10 +56,9 @@ export class Walker extends Enemy {
   public constructor(
     parent: Node,
     id: number,
-    public eyeType: number = 0,
-    hp: number = 1
+    private eyeType: number = 0,
   ) {
-    super(parent, id, 1 + eyeType, WALKER_SHAPE, true, hp, 5);
+    super(parent, id, 1 + eyeType, WALKER_SHAPE, true, 5);
 
     const eye = new Node(this);
     eye.mesh = { id: eyeType ? Meshes.eye2 : Meshes.eye };
@@ -106,10 +93,9 @@ export class Flier extends Enemy {
   public constructor(
     parent: Node,
     id: number,
-    public eyeType: number = 0,
-    hp: number = 1
+    private eyeType: number = 0,
   ) {
-    super(parent, id, 3 + eyeType, FLIER_SHAPE, false, hp, 3);
+    super(parent, id, 3 + eyeType, FLIER_SHAPE, false, 3);
     const mesh = this.root = new Node(this);
     mesh.mesh = { id: eyeType ? Meshes.eye2 : Meshes.eye };
     const wing1 = new Node(mesh);
@@ -144,9 +130,8 @@ export class Watcher extends Enemy {
   public constructor(
     parent: Node,
     id: number,
-    hp: number = 1
   ) {
-    super(parent, id, 5, WATCHER_SHAPE, true, hp, 0);
+    super(parent, id, 5, WATCHER_SHAPE, true, 0);
     this.mesh = { id: Meshes.watcher };
   }
   

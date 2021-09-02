@@ -82,9 +82,9 @@ export class FpsControl {
     const action = this.paused ? Action.None : (this.action | processGamepad(this));
     this.atk = !!(action & Action.A);
     this.dir[0] = (action & Action.L ? 1 : 0) + (action & Action.R ? -1 : 0);
-    this.dir[2] = (action & Action.D ? -1 : 0) + (action & Action.U ? 1 : 0);
     this.dir[1] = 0;
-    quat.rotateVec3(this.dir, quat.rotateY(this.rotY, tmpQuat), this.dir);
+    this.dir[2] = (action & Action.D ? -1 : 0) + (action & Action.U ? 1 : 0);
+    quat.rotateVec3(this.dir, quat.fromAxisAngle([0, 1, 0], this.rotY, tmpQuat), this.dir);
   }
 
   /**
@@ -144,15 +144,11 @@ export class FpsControl {
       const vertical = (touch.clientY - touchPoint[1]) / innerHeight;
       if (touchType === 1) {
         this.action = this.action & ~(Action.L | Action.R | Action.U | Action.D);
-        if (horizontal < -TOCUH_MOVE_THRESHOLD) {
-          this.action = this.action | Action.L;
-        } else if (horizontal > TOCUH_MOVE_THRESHOLD) {
-          this.action = this.action | Action.R;
+        if (Math.abs(horizontal) > TOCUH_MOVE_THRESHOLD) {
+          this.action = this.action | (horizontal < 0 ? Action.L : Action.R);
         }
-        if (vertical < -TOCUH_MOVE_THRESHOLD) {
-          this.action = this.action | Action.U;
-        } else if (vertical > TOCUH_MOVE_THRESHOLD) {
-          this.action = this.action | Action.D;
+        if (Math.abs(vertical) > TOCUH_MOVE_THRESHOLD) {
+          this.action = this.action | (horizontal < 0 ? Action.U : Action.D);
         }
       } else {
         this.rot(horizontal, vertical);
@@ -234,15 +230,11 @@ function processGamepad(control: FpsControl): Action {
 
     let horizontal = gamepad.axes[0] || 0;
     let vertical = gamepad.axes[1] || 0;
-    if (horizontal < -GAMEPAD_MOVE_THRESHOLD) {
-      gamepadAction = gamepadAction | Action.L;
-    } else if (horizontal > GAMEPAD_MOVE_THRESHOLD) {
-      gamepadAction = gamepadAction | Action.R;
+    if (Math.abs(horizontal) > GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | (horizontal < 0 ? Action.L : Action.R);
     }
-    if (vertical < -GAMEPAD_MOVE_THRESHOLD) {
-      gamepadAction = gamepadAction | Action.U;
-    } else if (vertical > GAMEPAD_MOVE_THRESHOLD) {
-      gamepadAction = gamepadAction | Action.D;
+    if (Math.abs(vertical) > GAMEPAD_MOVE_THRESHOLD) {
+      gamepadAction = gamepadAction | (horizontal < 0 ? Action.U : Action.D);
     }
 
     horizontal = gamepad.axes[2] || 0;

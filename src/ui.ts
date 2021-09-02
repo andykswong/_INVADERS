@@ -1,12 +1,13 @@
 import { IPFS_GATEWAY_ENDPOINT, NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT } from './const';
-import { beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, nav, scoreText, screenshotBtn, startBtn } from './dom';
+import { Meshes } from './models/meshes';
+import { BeginnerWaves } from './models/waves';
+import { answerInput, backBtn, beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, hostBtn, joinBtn, mainMenu, multiplayerBtn, multiplayerMenu, multiplayerStatus, offerInput, scoreText, screenshotBtn, startBtn, startMultiplayerBtn } from './dom';
 import { Screen, startGame, state, stateChangeListeners, updateState } from './state';
 import { playMusic } from './audio';
 import { camera, control, player } from './init';
 import { introNode } from './intro';
 import { highscore, maxWave, save } from './save';
-import { Meshes } from './models/meshes';
-import { BeginnerWaves } from './models/waves';
+import { connect, disconnect, host, join, messages } from './multiplayer';
 
 let screenshotReady = true;
 
@@ -15,24 +16,6 @@ function resizeCanvas() {
 }
 resizeCanvas();
 addEventListener('resize', resizeCanvas);
-
-startBtn.addEventListener('touchend', (e) => {
-  e.preventDefault();
-  playMusic();
-  startGame(true);
-});
-startBtn.addEventListener('click', () => {
-  playMusic();
-  startGame(false);
-});
-
-beginnerBtn.addEventListener('click', () => {
-  updateState({ 'beg': !state.beg });
-});
-
-coilBtn.addEventListener('click', () => {
-  updateState({ 'coil': !state.coil });
-});
 
 screenshotBtn.addEventListener('click', () => {
   if (screenshotReady) {
@@ -54,13 +37,85 @@ screenshotBtn.addEventListener('click', () => {
   }
 });
 
+// Start buttons
+// =============
+
+startBtn.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  playMusic();
+  startGame(true);
+});
+startBtn.addEventListener('click', () => {
+  playMusic();
+  startGame(false);
+});
+
+startMultiplayerBtn.addEventListener('touchend', (e) => {
+  e.preventDefault();
+  playMusic();
+  connect(state.host, answerInput.value).then(() => {
+    startGame(true, true);
+  }, () => (multiplayerStatus.innerText = 'CANNOT START'));
+});
+startMultiplayerBtn.addEventListener('click', () => {
+  playMusic();
+  connect(state.host, answerInput.value).then(() => {
+    startGame(false, true);
+  }, () => (multiplayerStatus.innerText = 'CANNOT START'));
+});
+
+// Main Menu
+// =========
+
+beginnerBtn.addEventListener('click', () => {
+  updateState({ 'beg': !state.beg });
+});
+
+coilBtn.addEventListener('click', () => {
+  updateState({ 'coil': !state.coil });
+});
+
+multiplayerBtn.addEventListener('click', () => {
+  updateState({ 'scr': Screen.Multiplayer });
+});
+
+// Multiplayer Menu
+// ================
+
+backBtn.addEventListener('click', () => {
+  updateState({ 'scr': Screen.Menu });
+});
+
+hostBtn.addEventListener('click', () => {
+  host().then(
+    (offer) => {
+      offerInput.value = offer;
+      updateState({ 'host': true });
+    },
+    () => (multiplayerStatus.innerText = 'CANNOT HOST')
+  );
+});
+
+joinBtn.addEventListener('click', () => {
+  join(offerInput.value).then(
+    (answer) => {
+      answerInput.value = answer;
+      updateState({ 'host': false });
+    },
+    () => (multiplayerStatus.innerText = 'CANNOT JOIN')
+  );
+});
+
 // React to state changes
 stateChangeListeners.push((newState, prevState, init) => {
   if (init || newState.scr !== prevState.scr) {
-    nav.hidden = (newState.scr !== Screen.Menu);
+    mainMenu.hidden = (newState.scr !== Screen.Menu);
+    multiplayerMenu.hidden = (newState.scr !== Screen.Multiplayer);
     crosshair.hidden = (newState.scr !== Screen.Game);
     health.hidden = (newState.scr !== Screen.Game);
     introNode.hide = (newState.scr === Screen.Game);
+    offerInput.value = '';
+    answerInput.value = '';
 
     if (newState.scr === Screen.Menu) {
       scoreText.innerText = `HISCORE ${highscore}`;
@@ -74,6 +129,10 @@ stateChangeListeners.push((newState, prevState, init) => {
     }
 
     if (newState.scr === Screen.End) {
+      // Reset networking
+      disconnect();
+      messages.length = 0;
+
       control.reset();
       !newState.touch && removeEventListener('mouseup', resumeControl);
 
@@ -99,11 +158,11 @@ stateChangeListeners.push((newState, prevState, init) => {
     beginnerBtn.innerText = `${newState.beg ? '☑' : '☐'} BEGINNER`;
   }
 
-  if (newState.score !== prevState.score && newState.scr === Screen.Game) {
+  if (newState.scr === Screen.Game && (prevState.scr !== Screen.Game || newState.score !== prevState.score)) {
     scoreText.innerText = `SCORE ${newState.score}`;
   }
   if (newState.hp !== prevState.hp) {
-    health.innerText = (newState.hp ? `LIVES ${Array(newState.hp | 0).fill('⬤').join(' ')}` : '');
+    health.innerText = `LIVES ${Array(newState.hp | 0).fill('⬤').join(' ')}`;
     if (newState.hp < prevState.hp) {
       playerHit();
     }

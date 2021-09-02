@@ -57,11 +57,11 @@ function variableDeclarationToLet({ node }) {
 function removeMethodsFromClassDeclaration(path) {
   const { node } = path;
   const name = node.id.name;
-  if (['NanoGLRenderingDevice', 'NanoGLRenderPassContext'].includes(name)) {
+  if (['NanoGLRenderingDevice', 'NanoGLRenderPassContext', 'GLBuffer', 'GLRenderPass', 'GLShader', 'GLPipeline'].includes(name)) {
     const properties = [];
     for (const property of node.body.body) {
       const propName = property.key.name;
-      if (['texture', 'scissor', 'blendColor', 'stencilRef', 'viewport'].includes(propName)) {
+      if (['texture', 'scissor', 'blendColor', 'stencilRef', 'viewport', 'destroy'].includes(propName)) {
         continue;
       }
       properties.push(property);

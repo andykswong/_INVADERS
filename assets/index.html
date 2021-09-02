@@ -1,14 +1,21 @@
-<!DOCTYPE html><html><head><meta charset="utf-8"><meta name="monetization" content="$ilp.uphold.com/NanhqQLkB9Y9"><title>_INVADERS</title><style>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="monetization" content="$ilp.uphold.com/NanhqQLkB9Y9">
+<title>_INVADERS</title>
+<style>
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
+  color: #eee;
+  font: 28px "Arial Black", sans-serif;
 }
 
 html, body, nav, span, b {
   transition: all .1s;
   background: none;
-  color: #eee;
-  font: 28px 'Arial Black', sans-serif;
   overflow: hidden;
   position: absolute;
   display: flex;
@@ -23,8 +30,18 @@ html, body, span, b {
   height: 100%;
 }
 
+div {
+  width: 100%;
+  display: flex;
+}
+
 h1 {
   font-size: 2.5em;
+}
+
+h6 {
+  font-size: .7em;
+  color: #aaa;
 }
 
 a:hover, a:active {
@@ -40,8 +57,12 @@ a {
   text-align: center;
 }
 
-a, p {
-  cursor: pointer;
+input {
+  margin-top: .7em;
+  width: 100%;
+  background: none;
+  border: none;
+  border-bottom: 3px solid #ddd;
 }
 
 p {
@@ -87,4 +108,13 @@ p {
 [hidden] {
   display: none;
 }
-</style></head><body><span hidden>✛</span><b></b><nav><h1>_INVADERS</h1><a>START</a><a hidden></a><a></a></nav><p id="r">📷</p><p id="s"></p><p hidden id="h"></p><p hidden id="c">𝒞</p><p hidden id="a">A</p><canvas></canvas></body></html>
+</style>
+</head>
+<body>
+<span hidden>✛</span><b></b>
+<nav><h1>_INVADERS</h1><a>START</a><a>CO-OP</a><a hidden></a><a></a></nav>
+<nav hidden><h1>_INVADERS</h1><h6></h6><a>BACK</a><input placeholder="OFFER"><input placeholder="ANSWER"><div><a>HOST</a><pre> </pre><a>JOIN</a></div><a>START</a></nav>
+<p id="r">📷</p><p id="s"></p><p hidden id="h"></p><p hidden id="c">𝒞</p><p hidden id="a">A</p>
+<canvas></canvas>
+</body>
+</html>

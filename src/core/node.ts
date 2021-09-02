@@ -1,9 +1,7 @@
-import { mat4, Mat4, quat, ReadonlyVec3, transform, vec3, Vec3, Vec4 } from 'munum';
+import { array, mat4, Mat4, quat, rotate, vec3, Vec3, Vec4 } from 'munum';
 import { Camera } from './camera';
 import { MeshInstance } from './mesh';
 import { Body } from './physics';
-
-const UNIT_SCALE: ReadonlyVec3 = [1, 1, 1];
 
 /**
  * A 3d node hierarchy.
@@ -63,9 +61,10 @@ export class Node {
   public update(dt: number): void {
     if (this.hide) { return; }
 
-    this.body && vec3.copy(this.body.pos, this.t);
+    this.body && array.copy(this.body.pos, this.t);
 
-    transform(this.t, this.r, UNIT_SCALE, this.m);
+    rotate(this.r, this.m);
+    array.copy(this.t, this.m, 0, 12, 3);
     this.parent && mat4.mul(this.parent.m, this.m, this.m);
 
     this.mesh && (this.mesh.m = this.m);
