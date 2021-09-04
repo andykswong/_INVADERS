@@ -127,7 +127,7 @@ export function socketHost(): boolean {
   if (socket && socket['connected']) {
     multiplayerStatus.innerText = 'CONNECTING';
     socket['off']('P');
-    socket.once(joinCodeInput.value, (id: string) => host().then((offer) => {
+    socket['once'](joinCodeInput.value, (id: string) => host().then((offer) => {
       socket['emit']('P', 'O', (offerInput.value = offer), id);
       socket['once']('P', (_: string, answer: string) => {
         answerInput.value = answer;

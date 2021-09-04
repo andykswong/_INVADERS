@@ -9,6 +9,7 @@
   padding: 0;
   color: #ddd;
   font: 28px "Arial Black";
+  user-select: none;
 }
 
 html, body, span, b, nav, p {
@@ -79,7 +80,7 @@ input {
   opacity: .4;
   border: 2px solid #ddd;
   border-radius: 50%;
-  bottom: 20%;
+  bottom: 15%;
   right: 15%;
   width: 2em;
   line-height: 2em;
@@ -98,7 +99,7 @@ input {
 <body>
 <span hidden>✛</span><b></b>
 <nav><h1>_INVADERS</h1><a>START</a><a>CO-OP</a><a hidden></a><a></a></nav>
-<nav hidden><h1>_INVADERS</h1><a>BACK</a><h6></h6><input placeholder="CODE"><div><a>HOST</a><pre> </pre><a>JOIN</a></div><input placeholder="OFFER"><input placeholder="ANSWER"><a>START</a></nav>
+<nav hidden><a>BACK</a><h6></h6><input placeholder="CODE"><div><a>HOST</a><pre> </pre><a>JOIN</a></div><input placeholder="OFFER"><input placeholder="ANSWER"><a>START</a></nav>
 <p id="r">📷</p><p id="s"></p><p hidden id="h"></p><p hidden id="c">𝒞</p><p hidden id="a">A</p>
 <canvas></canvas>
 <script src="/socket.io/socket.io.js"></script>

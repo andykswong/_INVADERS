@@ -58,10 +58,9 @@ const meshes: MeshInstance[] = [];
 
 let lastTime = 0;
 let frame = 0;
-requestAnimationFrame(loop);
+loop(0);
 function loop(t: number) {
   requestAnimationFrame(loop);
-  frame = (frame + 1) % 4;
   t = t / 1000;
   const dt = lastTime ? t - lastTime : 0;
   lastTime = t;
@@ -79,7 +78,7 @@ function loop(t: number) {
         updateState({ 'p2p': false, 'host': true });
         player2.hide = true;
       } else {
-        !frame && sendUpdate();
+        !((frame = (frame + 1) % 4) || !player.hp) && sendUpdate();
         remoteUpdate();
       }
     }
