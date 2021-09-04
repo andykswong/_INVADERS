@@ -8,8 +8,7 @@ export const GAME_NAME = '_INVADERS';
 // WebRTC configs
 // ==============
 
-export const ICE_SERVER_URLS = 'stun:stun.l.google.com:19302';
-export const ICE_GATHERING_TIME_MS = 3000;
+export const ICE_SERVER_URLS = `stun:stun${((Math.random() * 5) | 0) || ''}.l.google.com:19302`;
 export const CONNECTION_TIMEOUT_MS = 15000;
 
 // Control configs

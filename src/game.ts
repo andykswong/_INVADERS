@@ -27,7 +27,7 @@ stateChangeListeners.push((newState, prevState, init) => {
   if (init || newState.scr !== prevState.scr) {
     if (newState.scr === Screen.Game) {
       player.hp = newState.hp;
-      lastRemoteUpdate = Date.now() / 1000;
+      lastRemoteUpdate = 0;
       vec3.set(player.body.pos, (state.p2p ? (state.host ? 1 : -1) * MULTIPLAYER_POS_X : 0), 0, PLAYER_POS_Z);
     } else {
       vec3.set(player.body.pos, 0, 0, PLAYER_POS_Z);
@@ -62,8 +62,9 @@ loop(0);
 function loop(t: number) {
   requestAnimationFrame(loop);
   t = t / 1000;
-  const dt = lastTime ? t - lastTime : 0;
+  const dt = t - lastTime;
   lastTime = t;
+  lastRemoteUpdate = lastRemoteUpdate || t;
 
   // Update game
   if (state.scr === Screen.Game) {
@@ -78,8 +79,8 @@ function loop(t: number) {
         updateState({ 'p2p': false, 'host': true });
         player2.hide = true;
       } else {
-        !((frame = (frame + 1) % 4) || !player.hp) && sendUpdate();
-        remoteUpdate();
+        (!(frame = (frame + 1) % 4) || !player.hp) && sendUpdate();
+        remoteUpdate(t);
       }
     }
 
@@ -264,9 +265,9 @@ function updateEnemies(dt: number): void {
 // P2P remote update
 // =================
 
-function remoteUpdate(): void {
+function remoteUpdate(t: number): void {
   if (messages.length) {
-    lastRemoteUpdate = Date.now() / 1000;
+    lastRemoteUpdate = t;
   }
 
   for (const message of (messages as SyncEvent[])) {
@@ -281,7 +282,7 @@ function remoteUpdate(): void {
       enemyDelta[1] = 0;
     }
     if (message.p) { // State sync event
-      const player2WasAlive = player2.hide;
+      const player2WasAlive = !player2.hide;
       if ((player2.hide = message.h <= 0) && player2WasAlive) {
         playHit();
         createDestructionParticles(player2);

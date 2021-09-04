@@ -4,7 +4,7 @@ import advzip from 'advzip-bin';
 import sevenBin from '7zip-bin';
 import Seven from 'node-7z';
 
-const OUTPUT = 'dist.zip';
+const OUTPUT = 'submission.zip';
 
 const stream = Seven.add(OUTPUT, ['./public/index.html', './public/server.js'], {
   $bin: sevenBin.path7za,

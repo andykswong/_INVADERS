@@ -3,4 +3,6 @@ node_modules
 .idea
 .vscode
 .DS_STORE
+dist.zip
 public/game.js*
+*.sqlite

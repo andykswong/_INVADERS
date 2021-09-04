@@ -7,7 +7,7 @@ import { playMusic } from './audio';
 import { camera, control, player } from './init';
 import { introNode } from './intro';
 import { highscore, maxWave, save } from './save';
-import { connect, disconnect, host, join, messages, socketHost, socketJoin } from './multiplayer';
+import { connect, disconnect, host, join, socketHost, socketJoin } from './multiplayer';
 
 let screenshotReady = true;
 
@@ -55,13 +55,13 @@ startP2PBtn.addEventListener('touchend', (e) => {
   connect(state.host, answerInput.value).then(() => {
     playMusic();
     startGame(true, true);
-  }, () => multiplayerStatus.innerText = 'TIMEOUT');
+  }, (e) => multiplayerStatus.innerText = e || '');
 });
 startP2PBtn.addEventListener('click', () => {
   connect(state.host, answerInput.value).then(() => {
     playMusic();
     startGame(false, true);
-  }, () => multiplayerStatus.innerText = 'TIMEOUT');
+  }, (e) => multiplayerStatus.innerText = e || '');
 });
 
 // Main Menu
@@ -90,13 +90,15 @@ offerBtn.addEventListener('click', () => socketHost() || host().then(
   (offer) => {
     offerInput.value = offer;
     updateState({ 'host': true });
-  }
+  },
+  () => multiplayerStatus.innerText = 'NETWORK ERROR'
 ));
 answerBtn.addEventListener('click', () => socketJoin() || join(offerInput.value).then(
   (answer) => {
     answerInput.value = answer;
     updateState({ 'host': false });
-  }
+  },
+  () => multiplayerStatus.innerText = 'NETWORK ERROR'
 ));
 
 // React to state changes
@@ -113,7 +115,6 @@ stateChangeListeners.push((newState, prevState, init) => {
     if (newState.scr === Screen.Menu) {
       // Reset networking
       disconnect();
-      messages.length = 0;
     }
 
     if (newState.scr === Screen.Game) {

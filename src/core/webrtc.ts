@@ -1,4 +1,4 @@
-import { CONNECTION_TIMEOUT_MS, ICE_GATHERING_TIME_MS, ICE_SERVER_URLS } from '../const';
+import { CONNECTION_TIMEOUT_MS, ICE_SERVER_URLS } from '../const';
 
 /**
  * WebRTC data channel connection.
@@ -94,9 +94,11 @@ export function connect(host: boolean, answer: string): Promise<void> {
 
     if (peerConn!.ch.readyState === 'open') {
       resolve();
+    } else if (peerConn!.pc.iceConnectionState === 'failed') {
+      reject('NETWORK ERROR');
     } else {
       peerConn!.ch.onopen = () => resolve();
-      setTimeout(reject, CONNECTION_TIMEOUT_MS);
+      setTimeout(() => reject('TIMEOUT'), CONNECTION_TIMEOUT_MS);
     }
   });
 }
@@ -108,7 +110,9 @@ export function disconnect(): void {
   if (peerConn) {
     peerConn.pc.close();
     peerConn = null;
+    process.env.DEBUG && console.log('disconnected');
   }
+  messages.length = 0;
 }
 
 /**
