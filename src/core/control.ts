@@ -1,8 +1,6 @@
 import { clamp, quat, vec3, Vec3 } from 'munum';
 import { GAMEPAD_MOVE_THRESHOLD, TOCUH_MOVE_THRESHOLD } from '../const';
 
-const TWO_PI = 2 * Math.PI;
-
 const tmpQuat = quat.create();
 
 export enum Action {
@@ -33,7 +31,7 @@ export class FpsControl {
     private readonly canvas: HTMLCanvasElement,
     private readonly atkBtn: HTMLElement,
     /** Angular speed */
-    public w: number = TWO_PI / 4
+    public w: number = Math.PI / 2
   ) {
     this.reset();
     document.addEventListener('pointerlockchange', this.lock);
@@ -70,7 +68,7 @@ export class FpsControl {
   public reset(): void {
     this.pause();
     this.paused = true;
-    this.rotX = -(this.rotY = TWO_PI / 2) / 12;
+    this.rotX = -(this.rotY = Math.PI) / 12;
     this.atk = false;
     this.action = Action.None;
   }
@@ -84,15 +82,15 @@ export class FpsControl {
     this.dir[0] = (action & Action.L ? 1 : 0) + (action & Action.R ? -1 : 0);
     this.dir[1] = 0;
     this.dir[2] = (action & Action.D ? -1 : 0) + (action & Action.U ? 1 : 0);
-    quat.rotateVec3(this.dir, quat.fromAxisAngle([0, 1, 0], this.rotY, tmpQuat), this.dir);
+    quat.rotateVec3(quat.rotateAxis([0, 1, 0], this.rotY, tmpQuat), this.dir, this.dir);
   }
 
   /**
    * Set X/Y rotations.
    */
   public rot(x: number, y: number): void {
-    this.rotY = clamp((this.rotY - x * this.w + TWO_PI) % TWO_PI, TWO_PI / 8 * 3, TWO_PI / 8 * 5);
-    this.rotX = clamp(this.rotX + y * this.w, -TWO_PI / 8, TWO_PI / 48);
+    this.rotY = clamp((this.rotY - x * this.w + (Math.PI * 2)) % (Math.PI * 2), Math.PI / 2, Math.PI / 2 * 3);
+    this.rotX = clamp(this.rotX + y * this.w, -Math.PI / 4, Math.PI / 24);
   };
 
   private touchCtrl(enable: boolean): void {

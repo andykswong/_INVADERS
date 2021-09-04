@@ -107,9 +107,9 @@ export class Flier extends Enemy {
   public update(dt: number): void {
     const theta = Math.abs(Math.sin(-3 * this.animTimer));
     vec3.set(this.root.t, 0, 3 - Math.cos(theta), 0);
-    quat.fromAxisAngle([1, 0, 0], clamp(Math.atan2(this.m[13] + 2 - player.m[13], player.m[14] - this.m[14] + .5), 0, Math.PI / 3), this.root.r);
-    quat.fromAxisAngle([0, 1, 0], -Math.PI * theta / 3, this.root.child[0].r);
-    quat.fromAxisAngle([0, 1, 0], Math.PI * (1 + theta / 3), this.root.child[1].r);
+    quat.rotateAxis([1, 0, 0], clamp(Math.atan2(this.m[13] + 2 - player.m[13], player.m[14] - this.m[14] + .5), 0, Math.PI / 3), this.root.r);
+    quat.rotateAxis([0, 1, 0], -Math.PI * theta / 3, this.root.child[0].r);
+    quat.rotateAxis([0, 1, 0], Math.PI * (1 + theta / 3), this.root.child[1].r);
 
     super.update(dt);
   }
@@ -117,7 +117,7 @@ export class Flier extends Enemy {
   public shoot(): void {
     if (this.eyeType) {
       const v = vec3.create(0, 0, 10);
-      quat.rotateVec3(v, this.root.r, v);
+      quat.rotateVec3(this.root.r, v, v);
       createProjectile(3, [this.m[12], this.m[13] + 3, this.m[14]], v);
     }
   }

@@ -3,7 +3,7 @@ import { ALIEN_SKIN_COLOR, BLUE_COLOR, DARK_COLOR, SAND_COLOR, COIL_COLOR, RED_C
 import { box, empty, merge, trans } from '../core/procedural';
 
 function rotateAxis(axis: ReadonlyVec3, angle: number): Mat4 {
-  return rotate(quat.fromAxisAngle(axis, angle));
+  return rotate(quat.rotateAxis(axis, angle));
 }
 
 export const ground = trans(box(100, .05, 100, SAND_COLOR), translate([0, -.05, 0]));
@@ -32,8 +32,8 @@ merge(watcher, back);
 
 export const foot = box(.2, .1, .3, ALIEN_SKIN_COLOR);
 
-export const playerBody = box(.4, .4, .4, SAND_COLOR);
-export const playerBody2 = box(.3, .3, .3, BLUE_COLOR);
+export const playerBody = box(.4, .4, .3, SAND_COLOR);
+export const playerBody2 = box(.3, .3, .2, BLUE_COLOR);
 trans(playerBody, translate([0, 1.7, 0]));
 trans(playerBody2, translate([0, .7, 0]));
 merge(playerBody, playerBody2);

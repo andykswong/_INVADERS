@@ -30,10 +30,6 @@ export default {
   module: {
     rules: [
       {
-        test: /\.(png|gif)/,
-        type: 'asset/inline',
-      },
-      {
         test: /\.m?js$/,
         enforce: 'pre',
         use: 'source-map-loader',

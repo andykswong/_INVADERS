@@ -3,21 +3,21 @@ import { CONNECTION_TIMEOUT_MS, ICE_GATHERING_TIME_MS, ICE_SERVER_URLS } from '.
 /**
  * WebRTC data channel connection.
  */
-export interface Connection {
+export interface PeerConnection {
   pc: RTCPeerConnection;
   ch: RTCDataChannel;
 }
 
 /** The active connection. */
-export let conn: Connection | null = null;
+export let peerConn: PeerConnection | null = null;
 
 /** Received messages from peer. */
 export const messages: any[] = [];
 
 /**
- * Create a connection with data channel.
+ * Create a peer connection with data channel.
  */
-export function createConnection(): Connection {
+export function createConnection(): PeerConnection {
   const pc = new RTCPeerConnection({
     'iceServers': [{ 'urls': ICE_SERVER_URLS }]
   });
@@ -44,17 +44,14 @@ export function createConnection(): Connection {
  */
 export function host(): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    if (conn) {
-      return reject();
+    if (!peerConn) {
+      peerConn = createConnection();
     }
-    conn = createConnection();
-    conn.pc.createOffer()
-      .then(des => conn!.pc.setLocalDescription(des))
-      .then(() => {
-        // Just wait for a fixed time for ICE gathering.
-        // We can also listen to icecandidate event but that needs more code
-        setTimeout(() => resolve(btoa(JSON.stringify(conn!.pc.localDescription))), ICE_GATHERING_TIME_MS);
-      })
+    peerConn.pc.createOffer()
+      .then(des => peerConn!.pc.setLocalDescription(des))
+      .then(() => (
+        peerConn!.pc.onicecandidate = (e) => !e.candidate && resolve(btoa(JSON.stringify(peerConn!.pc.localDescription)))
+      ))
       .catch(reject);
   });
 }
@@ -64,15 +61,15 @@ export function host(): Promise<string> {
  */
 export function join(remoteOffer: string): Promise<string> {
   return new Promise<string>((resolve, reject) => {
-    conn = createConnection();
-    conn.pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(remoteOffer))))
-      .then(() => conn!.pc.createAnswer())
-      .then((description) => conn!.pc.setLocalDescription(description))
-      .then(() => {
-        // Just wait for a fixed time for ICE gathering.
-        // We can also listen to icecandidate event but that needs more code
-        setTimeout(() => resolve(btoa(JSON.stringify(conn!.pc.localDescription))), ICE_GATHERING_TIME_MS);
-      })
+    if (!peerConn) {
+      peerConn = createConnection();
+    }
+    peerConn.pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(remoteOffer))))
+      .then(() => peerConn!.pc.createAnswer())
+      .then((description) => peerConn!.pc.setLocalDescription(description))
+      .then(() => (
+        peerConn!.pc.onicecandidate = (e) => !e.candidate && resolve(btoa(JSON.stringify(peerConn!.pc.localDescription)))
+      ))
       .catch(reject);
   });
 }
@@ -80,7 +77,7 @@ export function join(remoteOffer: string): Promise<string> {
 /**
  * Accept a WebRTC remote answer in base64.
  */
-export function accept(conn: Connection, remoteAnswer: string): Promise<void> {
+export function accept(conn: PeerConnection, remoteAnswer: string): Promise<void> {
   return conn.pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(remoteAnswer))));
 }
 
@@ -89,16 +86,16 @@ export function accept(conn: Connection, remoteAnswer: string): Promise<void> {
  */
 export function connect(host: boolean, answer: string): Promise<void> {
   return new Promise((resolve, reject) => {
-    if (!conn || (host && !answer)) {
+    if (!peerConn || (host && !answer)) {
       return reject();
     }
 
-    host && accept(conn, answer);
+    host && accept(peerConn, answer);
 
-    if (conn!.ch.readyState === 'open') {
+    if (peerConn!.ch.readyState === 'open') {
       resolve();
     } else {
-      conn!.ch.onopen = () => resolve();
+      peerConn!.ch.onopen = () => resolve();
       setTimeout(reject, CONNECTION_TIMEOUT_MS);
     }
   });
@@ -108,9 +105,9 @@ export function connect(host: boolean, answer: string): Promise<void> {
  * Close connections.
  */
 export function disconnect(): void {
-  if (conn) {
-    conn.pc.close();
-    conn = null;
+  if (peerConn) {
+    peerConn.pc.close();
+    peerConn = null;
   }
 }
 
@@ -119,7 +116,7 @@ export function disconnect(): void {
  */
 export function send<T>(msg: T) {
   try {
-    conn && conn.ch.send(JSON.stringify(msg));
+    peerConn && peerConn.ch.send(JSON.stringify(msg));
   } catch (e) {
     process.env.DEBUG && console.warn('send error', e, msg);
   }

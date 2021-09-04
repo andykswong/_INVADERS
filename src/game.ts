@@ -1,5 +1,5 @@
 import { array, vec3 } from 'munum';
-import { BEGINNER_BOSS_COUNT, CONNECTION_TIMEOUT_MS, ENEMY_WAVE_COUNTDOWN, MULTIPLAYER_POS_X, PLAYER_ATTACK_TIME, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
+import { CONNECTION_TIMEOUT_MS, MULTIPLAYER_POS_X, PLAYER_ATTACK_TIME, PLAYER_HP, PLAYER_MAX_HP, PLAYER_POS_Z, WAVE_CYCLE, WAVE_GENERATOR_MAX_ITER } from './const';
 import { device, pass } from './core/device';
 import { renderMesh, renderParticles } from './core/graphics';
 import { MeshInstance } from './core/mesh';
@@ -18,7 +18,6 @@ import { createEnemy, createProjectile } from './entities';
 import { Meshes } from './models/meshes';
 import { createDestructionParticles } from './particles';
 
-let nextWaveCountdown = 0;
 let flyDir = -1.5;
 let flyForward = 0;
 let lastRemoteUpdate = 0;
@@ -28,8 +27,8 @@ stateChangeListeners.push((newState, prevState, init) => {
   if (init || newState.scr !== prevState.scr) {
     if (newState.scr === Screen.Game) {
       player.hp = newState.hp;
-      vec3.set(player.body.pos, (state.p2p ? (state.host ? 1 : -1) * MULTIPLAYER_POS_X : 0), 0, PLAYER_POS_Z);
       lastRemoteUpdate = Date.now() / 1000;
+      vec3.set(player.body.pos, (state.p2p ? (state.host ? 1 : -1) * MULTIPLAYER_POS_X : 0), 0, PLAYER_POS_Z);
     } else {
       vec3.set(player.body.pos, 0, 0, PLAYER_POS_Z);
       vec3.set(player.body.v, 0, 0, 0);
@@ -58,17 +57,19 @@ const bodies: Body[] = [];
 const meshes: MeshInstance[] = [];
 
 let lastTime = 0;
+let frame = 0;
 requestAnimationFrame(loop);
 function loop(t: number) {
   requestAnimationFrame(loop);
-  t = t / 1000
+  frame = (frame + 1) % 4;
+  t = t / 1000;
   const dt = lastTime ? t - lastTime : 0;
   lastTime = t;
 
   // Update game
   if (state.scr === Screen.Game) {
     if (!state.p2p || state.host) {
-      updateWave(dt);
+      updateWave();
     }
 
     if (state.p2p) {
@@ -78,7 +79,7 @@ function loop(t: number) {
         updateState({ 'p2p': false, 'host': true });
         player2.hide = true;
       } else {
-        sendUpdate();
+        !frame && sendUpdate();
         remoteUpdate();
       }
     }
@@ -153,17 +154,12 @@ function hit(target: Body, by: Body): void {
 // Waves and Enemies Updates
 // =========================
 
-function updateWave(dt: number): void {
-  // Check if current wave is complete
-  if (!nextWaveCountdown && !enemies.child.length) {
-    nextWaveCountdown = ENEMY_WAVE_COUNTDOWN;
+function updateWave(): void {
+  // Populate next wave if current wave is complete
+  if (!enemies.child.length) {
     updateState({
       'wave': state.wave + 1,
     });
-  }
-
-  // Populate next wave after countdown
-  if (nextWaveCountdown && !(nextWaveCountdown = Math.max(0, nextWaveCountdown - dt))) {
     const data = getWave();
     populateWave(data);
     flyDir = -1.5;
@@ -179,9 +175,9 @@ function updateWave(dt: number): void {
 function getWave(): Wave {
   return (
     (state.beg && state.wave < BeginnerWaves.length) ? BeginnerWaves[state.wave] :
-    (state.wave % WAVE_CYCLE === WAVE_CYCLE - 1) ?
-      BossWaves[((state.wave < (state.beg ? 2 : 1) * WAVE_CYCLE ? BEGINNER_BOSS_COUNT : BossWaves.length) * Math.random()) | 0] :
-    generateWave()
+    ((state.wave + 1) % WAVE_CYCLE) ?
+      generateWave() :
+      BossWaves[(BossWaves.length * Math.random()) | 0]
   );
 }
 
@@ -288,6 +284,7 @@ function remoteUpdate(): void {
     if (message.p) { // State sync event
       const player2WasAlive = player2.hide;
       if ((player2.hide = message.h <= 0) && player2WasAlive) {
+        playHit();
         createDestructionParticles(player2);
       }
 
@@ -304,7 +301,7 @@ function remoteUpdate(): void {
           player2.timer = PLAYER_ATTACK_TIME;
         }
       }
-      if (!state.host && (message.l !== enemyDelta[0] || message.f !== enemyDelta[1])) {
+      if (!state.host) {
         for (const enemy of (enemies.child as Enemy[])) {
           if (enemy.type >= 3 && enemy.type < 5) {
             enemy.body.pos[0] += message.l - enemyDelta[0];

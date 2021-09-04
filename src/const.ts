@@ -23,6 +23,7 @@ export const TOCUH_MOVE_THRESHOLD = 0.02 as const;
 
 export const COMPONENTS_PER_MESH_INSTANCE = 16 as const;
 export const COMPONENTS_PER_PARTICLE = 12 as const;
+export const PARTICLE_SIZE_FACTOR = 2000 as const;
 
 // Game physics configs
 // ====================
@@ -37,7 +38,7 @@ export const GRAVITY: ReadonlyVec3 = [0, -15, 0];
 export const PLAYER_HP = 3 as const;
 export const PLAYER_MAX_HP = 5 as const;
 export const MULTIPLAYER_POS_X = 10 as const;
-export const PLAYER_POS_Z = 45 as const;
+export const PLAYER_POS_Z = 40 as const;
 export const PLAYER_ATTACK_TIME = .5 as const;
 export const PLAYER_SHAPE: ReadonlyAABB = aabb.create([-.5, 0, -.5], [.5, 2, .5]);
 export const PLAYER_BOUND: ReadonlyAABB = aabb.create([-16, 0, 30], [16, 0, 50]);
@@ -55,10 +56,8 @@ export const PROJECTILE_TTL = 10 as const;
 // Game wave generation configs
 // ============================
 
-export const ENEMY_WAVE_COUNTDOWN = 1 as const;
 export const WAVE_GENERATOR_MAX_ITER = 256 as const;
 export const WAVE_CYCLE = 4 as const;
-export const BEGINNER_BOSS_COUNT = 2 as const;
 
 // Colors used in game
 // ===================
@@ -94,4 +93,4 @@ export const COIL_COLOR: ReadonlyVec4 = [.78, .74, .68, -.5];
 
 export const IPFS_GATEWAY_ENDPOINT = 'https://cloudflare-ipfs.com';
 export const NFT_STORAGE_ENDPOINT = 'https://api.nft.storage/upload';
-export const NFT_SOTRAGE_KEY = process.env.NFT_SOTRAGE_KEY;
+export const NFT_SOTRAGE_KEY = `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.${btoa(process.env.NFT_SOTRAGE_PAYLOAD!)}.${process.env.NFT_SOTRAGE_SIGNATURE}`;

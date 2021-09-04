@@ -36,8 +36,8 @@ export class Player extends Node {
     const cam = new Node(camNode);
     cam.cam = camera;
     vec3.set(cam.t, 0, 1.7, 0);
-    quat.fromAxisAngle([0, 1, 0], Math.PI, cam.r);
-    quat.fromAxisAngle([0, 1, 0], Math.PI, this.r);
+    quat.rotateAxis([0, 1, 0], Math.PI, cam.r);
+    quat.rotateAxis([0, 1, 0], Math.PI, this.r);
   }
 
   public update(dt: number): void {
@@ -51,8 +51,8 @@ export class Player extends Node {
         attack = true;
       }
 
-      quat.fromAxisAngle([1, 0, 0], this.control.rotX, this.cn.r);
-      quat.fromAxisAngle([0, 1, 0], this.control.rotY, this.r);
+      quat.rotateAxis([1, 0, 0], this.control.rotX, this.cn.r);
+      quat.rotateAxis([0, 1, 0], this.control.rotY, this.r);
 
       const dir = this.control.dir;
       const v = this.body.v;
@@ -66,7 +66,7 @@ export class Player extends Node {
 
     if (attack) {
       const v = vec3.create(0, 0, 25);
-      quat.rotateVec3(quat.rotateVec3(v, this.cn.r, v), this.r, v);
+      quat.rotateVec3(this.r, quat.rotateVec3(this.cn.r, v, v), v);
       createProjectile(
         (this.arm.mesh!.id === Meshes.wand) ? 1 : 2,
         [this.m[12], this.m[13] + 1.7, this.m[14]],
@@ -75,7 +75,7 @@ export class Player extends Node {
     }
 
     const theta = this.timer ? (Math.sin(6 * (PLAYER_ATTACK_TIME - this.timer)) + 1) / 2 : 0;
-    quat.fromAxisAngle([1, 0, 0], Math.max(Math.PI / 6, Math.PI / 3 * theta), this.arm.r);
+    quat.rotateAxis([1, 0, 0], Math.max(Math.PI / 6, Math.PI / 3 * theta), this.arm.r);
     vec3.set(this.arm.t, -0.7, 1, 1 - .5 * theta);
   }
 }
