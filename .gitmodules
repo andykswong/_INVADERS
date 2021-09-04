@@ -1,6 +1,0 @@
-[submodule "dependencies/mugl"]
-	path = dependencies/mugl
-	url = https://github.com/andykswong/mugl.git
-[submodule "dependencies/munum"]
-	path = dependencies/munum
-	url = https://github.com/andykswong/munum.git
