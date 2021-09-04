@@ -4,7 +4,7 @@
 
 `_INVADERS` is Space Invaders-inspired game in 3D, in which you must stop endless waves of outer space invader monsters within a confined space.
 
-Being a submission for JS13KGames, the game is 13KB when zipped (13305 out of the 13312 bytes limit to be exact). It is an experiment to see how much web tech can be packed into the game within the size limit. Technologies used includes:
+Being a submission for JS13KGames, the game is 13KB when zipped (13306 out of the 13312 bytes limit to be exact). It is an experiment to see how much web tech can be packed into the game within the size limit. Technologies used includes:
 - WebGL graphics powered by [mugl](https://github.com/andykswong/mugl), my 2KB micro WebGL library
 - Web Audio sound effects and music powered by [ZzFX](https://github.com/KilledByAPixel/ZzFX) and [ZzFXM](https://keithclark.github.io/ZzFXM/)
 - WebRTC P2P co-op (via socket.io signaling server, or decentralized via manual offer/answer exchange)
