@@ -62,7 +62,9 @@ export default {
           mangle: {
             module: true,
             properties: {
-              keep_quoted: true
+              keep_quoted: true,
+              // socket.io functions
+              reserved: ['connected', 'emit', 'off', 'once'],
             }
           }
         },

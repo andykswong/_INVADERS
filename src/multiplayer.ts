@@ -1,6 +1,6 @@
 import type { io as SocketIO } from 'socket.io-client';
 import { ReadonlyVec3 } from 'munum';
-import { host, join, send } from './core/webrtc';
+import { host, join, send, socket } from './core/webrtc';
 import { player } from './init';
 import { Wave } from './models/waves';
 import { state, updateState } from './state';
@@ -13,9 +13,6 @@ declare global {
     io: typeof SocketIO;
   }
 }
-
-/** The active socket connection. */
-const socket = window['io'] && window['io']();
 
 /**
  * P2P network game sync event.
@@ -123,20 +120,20 @@ export function sendWave(wave: number, data: Wave): void {
  * 5. Ready
  */
 export function socketHost(): boolean {
-  multiplayerStatus.innerText = 'CANNOT REACH SERVER';
-  if (socket && socket['connected']) {
+  multiplayerStatus.innerText = 'NOT CONNECTED';
+  if (socket && socket.connected) {
     multiplayerStatus.innerText = 'CONNECTING';
-    socket['off']('P');
-    socket['once'](joinCodeInput.value, (id: string) => host().then((offer) => {
-      socket['emit']('P', 'O', (offerInput.value = offer), id);
-      socket['once']('P', (_: string, answer: string) => {
+    socket.off('P');
+    socket.once(joinCodeInput.value, (id: string) => host().then((offer) => {
+      socket.emit('P', 'O', (offerInput.value = offer), id);
+      socket.once('P', (_: string, answer: string) => {
         answerInput.value = answer;
         multiplayerStatus.innerText = 'READY';
       });
       updateState({ 'host': true });
     }));
   }
-  return socket && socket['connected'];
+  return socket && socket.connected;
 }
 
 /**
@@ -150,18 +147,18 @@ export function socketHost(): boolean {
  * 5. Ready
  */
 export function socketJoin(): boolean {
-  multiplayerStatus.innerText = 'CANNOT REACH SERVER';
-  if (socket && socket['connected']) {
+  multiplayerStatus.innerText = 'NOT CONNECTED';
+  if (socket && socket.connected) {
     multiplayerStatus.innerText = 'CONNECTING';
-    socket['off']('P');
-    socket['emit']('J', joinCodeInput.value);
-    socket['once']('P', (_: string, offer: string, id: string) => (
+    socket.off('P');
+    socket.emit('J', joinCodeInput.value);
+    socket.once('P', (_: string, offer: string, id: string) => (
       join(offerInput.value = offer).then((answer) => {
-        socket['emit']('P', 'A', (answerInput.value = answer), id);
+        socket.emit('P', 'A', (answerInput.value = answer), id);
         multiplayerStatus.innerText = 'READY';
         updateState({ 'host': false });
       })
     ));
   }
-  return socket && socket['connected'];
+  return socket && socket.connected;
 }

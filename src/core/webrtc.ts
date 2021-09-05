@@ -8,6 +8,9 @@ export interface PeerConnection {
   ch: RTCDataChannel;
 }
 
+/** The active socket connection. */
+export const socket = window['io'] && window['io']();
+
 /** The active connection. */
 export let peerConn: PeerConnection | null = null;
 

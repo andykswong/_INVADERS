@@ -98,7 +98,7 @@ export const BossWaves: Wave[] = [
   ],
 
   // Boss 2
-  /* [
+  [
     [
       [2,1, , , , , , , ,1,2],
     ],
@@ -129,7 +129,7 @@ export const BossWaves: Wave[] = [
       [ , , , ,4,3,4, , , , ],
       [ , ,5,5, , , ,5,5, , ],
     ],
-  ], */
+  ],
 
   // Boss 3
   [

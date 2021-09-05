@@ -1,4 +1,5 @@
 import { PLAYER_HP } from './const';
+import { socket } from './core/webrtc';
 
 /**
  * Screen type.
@@ -35,6 +36,9 @@ export interface State {
   /** Is playing p2p multiplayer? */
   p2p: boolean;
 
+  /** Is serverless? */
+  sl: boolean;
+
   /** Current score */
   score: number;
 
@@ -56,6 +60,7 @@ export let state: Readonly<State> = {
   'p2p': false,
   'host': true,
   'beg': true,
+  'sl': !socket,
   'hp': 0,
   'score': 0,
   'wave': -1,

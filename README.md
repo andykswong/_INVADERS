@@ -63,7 +63,7 @@ To start, player 1 can input a join code ('CODE' field) and click 'HOST'. Player
 
 Note: You may encounter 'NETWORK ERROR' or 'TIMEOUT' errors when trying to start the game. This can happen when hosts are behind NAT, as there is no TURN server to relay data.
 
-The 'OFFER' and 'ANSWER' are used to establish a P2P connection without the signaling server, as explained in the decentralized section below.
+The 'SERVERLESS' option is used to establish a P2P connection without the signaling server, as explained in the decentralized section below.
 
 ## Web Monetization Exclusives
 Subscribers will see the [Coil](https://coil.com/) icon (𝒞) at the bottom-right corner of the screen. They will get:
@@ -76,11 +76,11 @@ Subscribers will see the [Coil](https://coil.com/) icon (𝒞) at the bottom-rig
 Decentralized features are completely optionally and not required to play the game.
 
 IPFS:
-- The game itself is on IPFS, CID: [QmdgjumYTZdm4Qa3DjD487U2fCx2p5qyVVq7iFkaHA1w3T](https://cloudflare-ipfs.com/ipfs/QmdgjumYTZdm4Qa3DjD487U2fCx2p5qyVVq7iFkaHA1w3T)
+- The game itself is on IPFS
 - Click the camera icon (📷) at the bottom-left corner of the screen to take an in-game screenshot that is uploaded to IPFS / [nft.storage](https://nft.storage/)! A convenient way to make NFTs out of your gameplay screenshots!
 
 Decentralized P2P CO-OP:
-- CO-OP mode is still playable without the signaling server (e.g. when server is down or you are playing on IPFS)
+- Using the 'SERVERLESS' option, CO-OP mode is still playable without the signaling server (e.g. when server is down or you are playing on IPFS)
 - To connect, 2 players need to manually exchange the OFFER and ANSWER codes (via IM, emails or any channel):
   1. Player 1 clicks HOST to get the OFFER code
   1. Player 1 sends OFFER code to Player 2

@@ -1,7 +1,7 @@
 import { IPFS_GATEWAY_ENDPOINT, NFT_SOTRAGE_KEY, NFT_STORAGE_ENDPOINT } from './const';
 import { Meshes } from './models/meshes';
 import { BeginnerWaves } from './models/waves';
-import { answerInput, backBtn, beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, offerBtn, answerBtn, mainMenu, multiplayerBtn, multiplayerMenu, offerInput, scoreText, screenshotBtn, startBtn, startP2PBtn, multiplayerStatus } from './dom';
+import { answerInput, p2pBackBtn, beginnerBtn, canvas, coilBtn, coilIcon, crosshair, health, hitOverlay, offerBtn, answerBtn, mainMenu, multiplayerBtn, multiplayerMenu, offerInput, scoreText, screenshotBtn, startBtn, startP2PBtn, multiplayerStatus, joinCodeInput, endMenu, endBackBtn, serverlessBtn } from './dom';
 import { Screen, startGame, state, stateChangeListeners, updateState } from './state';
 import { playMusic } from './audio';
 import { camera, control, player } from './init';
@@ -79,21 +79,34 @@ multiplayerBtn.addEventListener('click', () => {
   updateState({ 'scr': Screen.Multiplayer });
 });
 
+// End Menu
+// ========
+endBackBtn.addEventListener('click', () => {
+  updateState({
+    'scr': Screen.Menu,
+    'beg': maxWave < BeginnerWaves.length ? state.beg : false,
+  });
+});
+
 // Multiplayer Menu
 // ================
 
-backBtn.addEventListener('click', () => {
+p2pBackBtn.addEventListener('click', () => {
   updateState({ 'scr': Screen.Menu });
 });
 
-offerBtn.addEventListener('click', () => socketHost() || host().then(
+serverlessBtn.addEventListener('click', () => {
+  updateState({ 'sl': !state.sl });
+});
+
+offerBtn.addEventListener('click', () => !state.sl ? socketHost() : host().then(
   (offer) => {
     offerInput.value = offer;
     updateState({ 'host': true });
   },
   () => multiplayerStatus.innerText = 'NETWORK ERROR'
 ));
-answerBtn.addEventListener('click', () => socketJoin() || join(offerInput.value).then(
+answerBtn.addEventListener('click', () => !state.sl ? socketJoin() : join(offerInput.value).then(
   (answer) => {
     answerInput.value = answer;
     updateState({ 'host': false });
@@ -106,11 +119,13 @@ stateChangeListeners.push((newState, prevState, init) => {
   if (init || newState.scr !== prevState.scr) {
     mainMenu.hidden = (newState.scr !== Screen.Menu);
     multiplayerMenu.hidden = (newState.scr !== Screen.Multiplayer);
+    endMenu.hidden = (newState.scr !== Screen.End);
     crosshair.hidden = (newState.scr !== Screen.Game);
     health.hidden = (newState.scr !== Screen.Game);
     introNode.hide = (newState.scr === Screen.Game);
     offerInput.value = '';
     answerInput.value = '';
+    multiplayerStatus.innerText = '';
 
     if (newState.scr === Screen.Menu) {
       // Reset networking
@@ -127,14 +142,8 @@ stateChangeListeners.push((newState, prevState, init) => {
     if (newState.scr === Screen.End) {
       control.reset();
       !newState.touch && removeEventListener('mouseup', resumeControl);
-
       save(newState.score, newState.wave);
-      updateState({
-        'scr': Screen.Menu,
-        'beg': maxWave < BeginnerWaves.length ? newState.beg : false,
-      });
     }
-
   }
 
   if (newState.sub) {
@@ -149,9 +158,16 @@ stateChangeListeners.push((newState, prevState, init) => {
     player.arm.mesh!.id = newState.coil ? Meshes.coil : Meshes.wand;
   }
 
+  if (newState.scr === Screen.Multiplayer) {
+    serverlessBtn.innerText = `${newState.sl ? '☑' : '☐'} SERVERLESS`;
+    joinCodeInput.hidden = newState.sl;
+    offerInput.hidden = !newState.sl;
+    answerInput.hidden = !newState.sl;
+  }
+
   if (newState.scr === Screen.Game) {
     scoreText.innerText = `SCORE ${newState.score}`;
-    health.innerText = `LIVES ${Array(newState.hp | 0).fill('⬤').join(' ')}`;
+    health.innerText = `LIVE ${Array(newState.hp | 0).fill('⬤').join(' ')}`;
     if (newState.hp < prevState.hp) {
       playerHit();
     }
