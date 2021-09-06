@@ -58,7 +58,7 @@ export class FpsControl {
     if (this.touch) {
       this.touchCtrl(false);
     } else {
-      document.exitPointerLock();
+      document.exitPointerLock && document.exitPointerLock();
     }
   }
 
@@ -132,6 +132,7 @@ export class FpsControl {
   };
 
   private touchmove = (e: TouchEvent): void => {
+    e.preventDefault();
     for (let i = 0; i < e.changedTouches.length; ++i) {
       const touch = e.changedTouches.item(i)!;
       const touchType = this.touchTypes[touch.identifier];
@@ -146,7 +147,7 @@ export class FpsControl {
           this.action = this.action | (horizontal < 0 ? Action.L : Action.R);
         }
         if (Math.abs(vertical) > TOCUH_MOVE_THRESHOLD) {
-          this.action = this.action | (horizontal < 0 ? Action.U : Action.D);
+          this.action = this.action | (vertical < 0 ? Action.U : Action.D);
         }
       } else {
         this.rot(horizontal, vertical);
@@ -232,7 +233,7 @@ function processGamepad(control: FpsControl): Action {
       gamepadAction = gamepadAction | (horizontal < 0 ? Action.L : Action.R);
     }
     if (Math.abs(vertical) > GAMEPAD_MOVE_THRESHOLD) {
-      gamepadAction = gamepadAction | (horizontal < 0 ? Action.U : Action.D);
+      gamepadAction = gamepadAction | (vertical < 0 ? Action.U : Action.D);
     }
 
     horizontal = gamepad.axes[2] || 0;

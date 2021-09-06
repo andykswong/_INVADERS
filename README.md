@@ -91,13 +91,17 @@ Decentralized P2P CO-OP:
 
 ## Browser Support
 - Latest desktop and mobile browsers with WebGL 1.0 enabled (*)
-- Tested browsers
-  - Latest Chrome, Firefox, Edge, or Safari (#) on Windows and Mac
-  - Latest Android Browser, Android Chrome or iOS Safari
+- Tested on:
+  - Desktop: Latest Chrome, Firefox, Edge, or Safari (#) on Windows and Mac
+  - Mobile: Latest Android Browser, Android Chrome or iOS Safari (^)
 
-\* [ANGLE_instanced_arrays](https://developer.mozilla.org/en-US/docs/Web/API/ANGLE_instanced_arrays) and [OES_standard_derivatives](https://developer.mozilla.org/en-US/docs/Web/API/OES_standard_derivatives) WebGL extensions are required for the game to work. They are supported by most browsers.
+\* Requires the following WebGL features, which are supported by most modern browsers and hardware (You can check your browser support at https://webglreport.com/):
+- highp float precision in fragment shader
+- [ANGLE_instanced_arrays](https://developer.mozilla.org/en-US/docs/Web/API/ANGLE_instanced_arrays) and [OES_standard_derivatives](https://developer.mozilla.org/en-US/docs/Web/API/OES_standard_derivatives) extensions
 
-\# Known to sometimes freeze on Safari when starting the game. If this happens, try closing it and reopen the game in a new tab
+\# Known to sometimes freeze on Safari when starting the game. Can be fixed by reopening the game in a new tab
+
+^ No fullscreen support on iOS Safari
 
 ## Build & Run
 1. To use the screenshot feature, you need to copy `.env.template` to `.env` and set NFT_SOTRAGE_PAYLOAD and NFT_SOTRAGE_SIGNATURE. You then need to get an API key for free from [nft.storage](https://nft.storage/). The key is a [JWT token](https://jwt.io/). NFT_SOTRAGE_PAYLOAD should be set to the base64 decoded payload of the key and NFT_SOTRAGE_SIGNATURE set to base64 encoded signature. This is needed to squeeze out ~20KB to fit the game within 13KB
