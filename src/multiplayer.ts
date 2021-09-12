@@ -39,6 +39,9 @@ export type SyncEvent =
   /** Player hp */
   h: number;
 
+  /** Player score */
+  s: number;
+
   /** Player position. */
   p: ReadonlyVec3;
 
@@ -88,6 +91,7 @@ export function sendUpdate(): void {
     't': Date.now(),
     'h': player.hp,
     'p': player.body.pos,
+    's': state.score,
     'c': state.coil,
     'l': enemyDelta[0],
     'f': enemyDelta[1],

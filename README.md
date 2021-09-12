@@ -6,7 +6,7 @@
 
 ![Start Screen](screenshots/start.png)
 
-The game is an experiment to see how much web tech can be packed into a game within the size limit. It is a submission to 5 categories of JS13KGames: Desktop, Mobile, Server, Web Monetization and Decentralized. Technologies used includes:
+The game is a submission to 5 categories of JS13KGames: Desktop, Mobile, Server, Web Monetization and Decentralized. Technologies used includes:
 - WebGL 3D graphics powered by [mugl](https://github.com/andykswong/mugl), a 2KB micro WebGL library I developed
 - Web Audio sound effects and music powered by [ZzFX](https://github.com/KilledByAPixel/ZzFX) and [ZzFXM](https://keithclark.github.io/ZzFXM/)
 - WebRTC P2P co-op (via the included signaling server, or decentralized via manual offer/answer exchange)
@@ -41,11 +41,13 @@ Mouse and Keyboard:
 - Move: Arrow Keys / WASD
 - Rotate View: Mouse Move
 - Attack: LMB / ENTER / E
+- Screenshot: P / onscreen button
 
 Touch Screen:
 - Move: Drag left half of screen
 - Rotate View: Drag right half of screen
-- Attack: Press A (onscreen button)
+- Attack: A (onscreen button)
+- Screenshot: Onscreen button
 
 Gamepad (only tested with Xbox, but other controllers should work):
 - Move: Left stick

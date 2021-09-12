@@ -17,7 +17,7 @@ function resizeCanvas() {
 resizeCanvas();
 addEventListener('resize', resizeCanvas);
 
-screenshotBtn.addEventListener('click', () => {
+function screenshot() {
   if (screenshotReady) {
     screenshotReady = false;
     canvas.toBlob((blob) =>
@@ -34,6 +34,13 @@ screenshotBtn.addEventListener('click', () => {
           screenshotReady = true;
         })
     );
+  }
+};
+
+screenshotBtn.addEventListener('click', screenshot);
+addEventListener('keypress', (e) => {
+  if (e.key === 'p') {
+    screenshot();
   }
 });
 
@@ -166,7 +173,7 @@ stateChangeListeners.push((newState, prevState, init) => {
   }
 
   if (newState.scr === Screen.Game) {
-    scoreText.innerText = `SCORE ${newState.score}`;
+    scoreText.innerText = `SCORE ${newState.score} ${newState.p2p ? `: ${newState.score2}` : ''}`;
     health.innerText = `LIVE ${Array(newState.hp | 0).fill('⬤').join(' ')}`;
     if (newState.hp < prevState.hp) {
       playerHit();

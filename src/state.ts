@@ -39,14 +39,17 @@ export interface State {
   /** Is serverless? */
   sl: boolean;
 
-  /** Current score */
-  score: number;
-
   /** Current wave */
   wave: number;
 
+  /** Current score */
+  score: number;
+
   /** Player hp */
   hp: number;
+
+  /** Player 2 score */
+  score2: number;
 }
 
 /**
@@ -61,9 +64,10 @@ export let state: Readonly<State> = {
   'host': true,
   'beg': true,
   'sl': !socket,
-  'hp': 0,
-  'score': 0,
   'wave': -1,
+  'score': 0,
+  'score2': 0,
+  'hp': 0,
 };
 
 /** State change listeners */

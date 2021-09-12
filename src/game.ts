@@ -282,6 +282,10 @@ function remoteUpdate(t: number): void {
       enemyDelta[1] = 0;
     }
     if (message.p) { // State sync event
+      updateState({
+        'score2': message.s,
+      });
+
       const player2WasAlive = !player2.hide;
       if ((player2.hide = message.h <= 0) && player2WasAlive) {
         playHit();
